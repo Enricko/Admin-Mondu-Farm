@@ -106,7 +106,12 @@ class _SapiTableState extends State<SapiTable> {
                                       1;
                                   return DataRow(cells: [
                                     DataCell(Text(numberedTable.toString())),
-                                    DataCell(Text(val.value['gambar'])),
+                                    DataCell(
+                                      Image.network(
+                                        "${val.value['gambar']}",
+                                        width: 50,
+                                      ),
+                                    ),
                                     DataCell(Text(val.value['usia']!.toString())),
                                     DataCell(Text(val.value['tinggi']!.toString())),
                                     DataCell(Text(val.value['berat']!.toString())),

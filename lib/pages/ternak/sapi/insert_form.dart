@@ -84,11 +84,11 @@ class _AddTernakFormState extends State<AddTernakForm> {
       var url = await snapshot.ref.getDownloadURL();
       if (url != null) {
         Map<String, dynamic> val = {
-          'usia': usiaController.text,
-          "deskripsi": tinggiController.text,
-          "harga": beratController.text,
-          "kategori": hargaController.text,
-          'image': url,
+          'usia': int.parse(usiaController.text),
+          "tinggi": int.parse(tinggiController.text),
+          "berat": int.parse(beratController.text),
+          "harga": int.parse(hargaController.text.replaceAll(RegExp(r'[^0-9]'), '')),
+          'gambar': url,
         };
 
         FirebaseDatabase.instance.ref().child("ternak").child("sapi").push().set(val).whenComplete(() {
