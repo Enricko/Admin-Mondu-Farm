@@ -64,7 +64,7 @@ class _UserTableState extends State<UserTable> {
         StreamBuilder(
           stream: db.onValue,
           builder: (context, snapshot) {
-            if (snapshot.hasData) {
+            if (snapshot.hasData && (snapshot.data!).snapshot.value != null) {
               // Variable data mempermudah memanggil data pada database
               Map<dynamic, dynamic> data =
                   Map<dynamic, dynamic>.from((snapshot.data! as DatabaseEvent).snapshot.value as Map<dynamic, dynamic>);
@@ -212,6 +212,89 @@ class _UserTableState extends State<UserTable> {
                 ),
               );
             }
+            if (snapshot.hasData) {
+              if (snapshot.hasData) {
+                return Expanded(
+                  child: Column(
+                    children: [
+                      Expanded(
+                        child: Container(
+                          alignment: Alignment.topCenter,
+                          margin: const EdgeInsets.symmetric(horizontal: 15),
+                          child: SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: SingleChildScrollView(
+                              child: DataTable(
+                                headingRowColor: MaterialStateProperty.all(const Color(0xffd3d3d3)),
+                                dataRowColor: MaterialStateProperty.all(const Color(0xffd3d3d3).withOpacity(0.7)),
+                                border: TableBorder.all(width: 1, color: Colors.black),
+                                columns: const [
+                                  DataColumn(label: Text("No")),
+                                  DataColumn(label: Text("Nama")),
+                                  DataColumn(label: Text("Email")),
+                                  DataColumn(label: Text("No Telphone")),
+                                  DataColumn(label: Text("Action")),
+                                ],
+                                rows: [],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Container(
+                        height: 50,
+                        width: double.infinity,
+                        margin: const EdgeInsets.symmetric(horizontal: 15),
+                        child: Pagination(
+                          numOfPages: ((1) / perpage).ceil(),
+                          selectedPage: page,
+                          pagesVisible: 5,
+                          onPageChanged: (value) {
+                            if (value != page) {
+                              incrementPage(value);
+                            }
+                          },
+                          nextIcon: const Icon(
+                            Icons.arrow_forward_ios,
+                            color: Colors.black,
+                            size: 14,
+                          ),
+                          previousIcon: const Icon(
+                            Icons.arrow_back_ios,
+                            color: Colors.black,
+                            size: 14,
+                          ),
+                          activeTextStyle: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                          ),
+                          activeBtnStyle: ButtonStyle(
+                            backgroundColor: MaterialStateProperty.all(Warna.ungu),
+                            shape: MaterialStateProperty.all(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(38),
+                              ),
+                            ),
+                          ),
+                          inactiveBtnStyle: ButtonStyle(
+                            backgroundColor: MaterialStateProperty.all(Warna.biruUngu),
+                            shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(38),
+                            )),
+                          ),
+                          inactiveTextStyle: const TextStyle(
+                            fontSize: 14,
+                            color: Colors.black,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }
+            }
             return Expanded(
               child: Center(
                 child: CircularProgressIndicator(),
@@ -311,17 +394,17 @@ class _EditUserFormState extends State<EditUserForm> {
                           const SizedBox(
                             height: 5,
                           ),
+                          CustomTextField(controller: namaController, hint: "Nama", type: TextInputType.text),
+                          CustomTextField(
+                            controller: noTelponController,
+                            hint: "No Telpon",
+                            type: TextInputType.phone,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly,
+                            ],
+                          ),
                         ],
                       ),
-                    ),
-                    CustomTextField(controller: namaController, hint: "Nama", type: TextInputType.text),
-                    CustomTextField(
-                      controller: noTelponController,
-                      hint: "No Telpon",
-                      type: TextInputType.phone,
-                      inputFormatters: [
-                        FilteringTextInputFormatter.digitsOnly,
-                      ],
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
@@ -354,10 +437,12 @@ class _EditUserFormState extends State<EditUserForm> {
                                   "nama": namaController.text,
                                   "no_telpon": noTelponController.text,
                                 }).whenComplete(() {
-                                  EasyLoading.showSuccess("Data User Telah di Ubah.",dismissOnTap: true, duration: Duration(seconds: 3));
+                                  EasyLoading.showSuccess("Data User Telah di Ubah.",
+                                      dismissOnTap: true, duration: Duration(seconds: 3));
                                   Navigator.pop(context);
                                 }).onError((error, stackTrace) {
-                                  EasyLoading.showSuccess("Error : ${error}",dismissOnTap: true, duration: Duration(seconds: 3));
+                                  EasyLoading.showSuccess("Error : ${error}",
+                                      dismissOnTap: true, duration: Duration(seconds: 3));
                                 });
                               }
                             },

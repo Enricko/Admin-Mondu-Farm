@@ -1,3 +1,4 @@
+import 'package:admin_mondu_farm/pages/ternak/sapi.dart';
 import 'package:admin_mondu_farm/pages/user.dart';
 import 'package:admin_mondu_farm/utils/color.dart';
 import 'package:admin_mondu_farm/utils/custom_extension.dart';
@@ -13,7 +14,7 @@ class Dashboard extends StatefulWidget {
 
 class _DashboardState extends State<Dashboard> {
   final _controller = SideMenuController();
-  String _currentPage = "user";
+  String _currentPage = "sapi";
 
   @override
   Widget build(BuildContext context) {
@@ -63,6 +64,8 @@ class _DashboardState extends State<Dashboard> {
         return Container();
       case "user":
         return UserTable();
+      case "sapi":
+        return SapiTable();
       default:
         return Container(
           child: Column(
@@ -110,10 +113,12 @@ class _DashboardState extends State<Dashboard> {
             ),
             SideMenuItemDataDivider(
               divider: Divider(color: Colors.black.withOpacity(0.3), height: 1),
+              padding:EdgeInsetsDirectional.symmetric(vertical: 10,horizontal: 5),
             ),
             const SideMenuItemDataTitle(
               title: 'Tables',
               titleStyle: TextStyle(fontSize: 14),
+              padding:EdgeInsetsDirectional.symmetric(vertical: 10,horizontal: 5),
             ),
             SideMenuItemDataTile(
               isSelected: _currentPage == "user",
@@ -125,16 +130,25 @@ class _DashboardState extends State<Dashboard> {
               icon: const Icon(Icons.people_alt_outlined),
               selectedIcon: const Icon(Icons.people_alt),
             ),
-            // SideMenuItemDataTile(
-            //   isSelected: _currentPage == "dashboard",
-            //   onTap: () => setState(() => _currentPage = "dashboard"),
-            //   title: 'Item 3',
-            //   icon: const Icon(Icons.play_arrow),
-            //   hoverColor: Warna.ungu,
-            //   highlightSelectedColor: Warna.ungu,
-            //   titleStyle: const TextStyle(color: Colors.black),
-            //   selectedIcon: const Icon(Icons.home),
-            // ),
+            SideMenuItemDataDivider(
+              divider: Divider(color: Colors.black.withOpacity(0.3), height: 1,),
+              padding:EdgeInsetsDirectional.symmetric(vertical: 10,horizontal: 5),
+            ),
+            const SideMenuItemDataTitle(
+              title: 'Hewan Ternak',
+              titleStyle: TextStyle(fontSize: 14),
+              padding: EdgeInsetsDirectional.symmetric(vertical: 7,horizontal: 5),
+            ),
+            SideMenuItemDataTile(
+              isSelected: _currentPage == "sapi",
+              onTap: () => setState(() => _currentPage = "sapi"),
+              title: 'Sapi',
+              icon: const Icon(Icons.filter_hdr_outlined),
+              hoverColor: Warna.ungu,
+              highlightSelectedColor: Warna.ungu,
+              titleStyle: const TextStyle(color: Colors.black),
+              selectedIcon: const Icon(Icons.filter_hdr_sharp),
+            ),
             // SideMenuItemDataTile(
             //   isSelected: _currentPage == "dashboard",
             //   onTap: () => setState(() => _currentPage = "dashboard"),
