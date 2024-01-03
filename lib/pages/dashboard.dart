@@ -24,6 +24,8 @@ class _DashboardState extends State<Dashboard> {
       appBar: AppBar(
         title: Text(_currentPage.title()),
         backgroundColor: Warna.biru,
+        elevation: 1,
+        shadowColor: Colors.black,
       ),
       drawer: width < 600 ? sidebar() : null,
       body: Row(
@@ -32,27 +34,22 @@ class _DashboardState extends State<Dashboard> {
           Expanded(
             child: Container(
               color: Warna.latar,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Container(
-                    margin: EdgeInsets.all(25),
-                    padding: EdgeInsets.all(25),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(25),
-                      color: Warna.biru,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.4),
-                          spreadRadius: 2,
-                          blurRadius: 8,
-                        ),
-                      ],
+              child: Container(
+                margin: EdgeInsets.all(25),
+                padding: EdgeInsets.all(25),
+            
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(25),
+                  color: Warna.biru,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.4),
+                      spreadRadius: 2,
+                      blurRadius: 8,
                     ),
-                    child: bodyWidget(),
-                  ),
-                ],
+                  ],
+                ),
+                child: bodyWidget(),
               ),
             ),
           ),
