@@ -2,7 +2,6 @@ import 'package:admin_mondu_farm/pages/user.dart';
 import 'package:admin_mondu_farm/utils/color.dart';
 import 'package:admin_mondu_farm/utils/custom_extension.dart';
 import 'package:flutter/material.dart';
-import 'package:sidebarx/sidebarx.dart';
 import 'package:flutter_side_menu/flutter_side_menu.dart';
 
 class Dashboard extends StatefulWidget {
