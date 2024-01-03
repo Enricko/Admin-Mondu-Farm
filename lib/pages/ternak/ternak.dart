@@ -1,34 +1,48 @@
 import 'dart:async';
-import 'dart:math';
 
-import 'package:admin_mondu_farm/pages/ternak/sapi/insert_form.dart';
+import 'package:admin_mondu_farm/pages/ternak/insert_form.dart';
+import 'package:admin_mondu_farm/pages/ternak/update_form.dart';
 import 'package:admin_mondu_farm/utils/alerts.dart';
 import 'package:admin_mondu_farm/utils/color.dart';
 import 'package:admin_mondu_farm/utils/custom_extension.dart';
-import 'package:admin_mondu_farm/utils/text_field.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/services.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:pagination_flutter/pagination.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 
-class SapiTable extends StatefulWidget {
-  const SapiTable({super.key});
+class TableTernak extends StatefulWidget {
+  const TableTernak({super.key, required this.kategori});
+  final String kategori;
 
   @override
-  State<SapiTable> createState() => _SapiTableState();
+  State<TableTernak> createState() => _TableTernakState();
 }
 
-class _SapiTableState extends State<SapiTable> {
-  DatabaseReference db = FirebaseDatabase.instance.ref().child('ternak').child("sapi");
+class _TableTernakState extends State<TableTernak> {
+  DatabaseReference db = FirebaseDatabase.instance.ref().child('ternak');
+
   int page = 1;
   int perpage = 10;
-
+  NumberFormat currencyFormatter = NumberFormat.currency(
+    locale: 'id',
+    symbol: 'Rp ',
+    decimalDigits: 0,
+  );
   incrementPage(int pageIndex) {
     setState(() {
       page = pageIndex;
     });
+  }
+
+  Future<String> getImageFromStorage(String pathName) {
+    FirebaseStorage storage = FirebaseStorage.instance;
+    Reference ref = storage.ref().child("ternak").child(widget.kategori.toLowerCase()).child(pathName);
+    // String imageUrl = ref.getDownloadURL();
+
+    return ref.getDownloadURL();
   }
 
   @override
@@ -41,7 +55,7 @@ class _SapiTableState extends State<SapiTable> {
         Container(
           alignment: Alignment.centerLeft,
           child: Text(
-            "Table Sapi",
+            "Table ${widget.kategori.title()}",
             style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900),
           ),
         ),
@@ -60,7 +74,7 @@ class _SapiTableState extends State<SapiTable> {
               builder: (BuildContext context) {
                 return Dialog(
                   shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(5))),
-                  child: AddTernakForm(width: width),
+                  child: InsertTernakForm(width: width, kategori: widget.kategori.toLowerCase()),
                 );
               },
             );
@@ -71,7 +85,7 @@ class _SapiTableState extends State<SapiTable> {
           height: 25,
         ),
         StreamBuilder(
-          stream: db.onValue,
+          stream: db.child(widget.kategori.toLowerCase()).onValue,
           builder: (context, snapshot) {
             if (snapshot.hasData && (snapshot.data!).snapshot.value != null) {
               // Variable data mempermudah memanggil data pada database
@@ -100,22 +114,38 @@ class _SapiTableState extends State<SapiTable> {
                                   DataColumn(label: Text("Harga")),
                                   DataColumn(label: Text("Action")),
                                 ],
+                                dataRowHeight: 100,
                                 rows: data.entries.skip((page - 1) * perpage).take(perpage).map((val) {
                                   var numberedTable = data.entries.toList().indexWhere(
                                           (element) => element.value == val.value && element.key == val.key) +
                                       1;
+
                                   return DataRow(cells: [
                                     DataCell(Text(numberedTable.toString())),
                                     DataCell(
-                                      Image.network(
-                                        "${val.value['gambar']}",
-                                        width: 50,
+                                      FutureBuilder<String>(
+                                        future: getImageFromStorage(val.value['gambar']),
+                                        builder: (context, snapshot) {
+                                          if (snapshot.hasData) {
+                                            return Container(
+                                              margin: EdgeInsets.all(5),
+                                              child: Image.network(
+                                                snapshot.data!,
+                                                width: 150,
+                                              ),
+                                            );
+                                          }
+
+                                          return Center(
+                                            child: CircularProgressIndicator(),
+                                          );
+                                        },
                                       ),
                                     ),
-                                    DataCell(Text(val.value['usia']!.toString())),
-                                    DataCell(Text(val.value['tinggi']!.toString())),
-                                    DataCell(Text(val.value['berat']!.toString())),
-                                    DataCell(Text(val.value['harga']!.toString())),
+                                    DataCell(Text(val.value['usia'].toString())),
+                                    DataCell(Text(val.value['tinggi'].toString())),
+                                    DataCell(Text(val.value['berat'].toString())),
+                                    DataCell(Text(currencyFormatter.format(val.value['harga']))),
                                     DataCell(Row(
                                       children: [
                                         Tooltip(
@@ -133,12 +163,12 @@ class _SapiTableState extends State<SapiTable> {
                                                   return Dialog(
                                                     shape: const RoundedRectangleBorder(
                                                         borderRadius: BorderRadius.all(Radius.circular(5))),
-                                                    // child: EditUserForm(
-                                                    //   width: width,
-                                                    //   formKey: _formKey,
-                                                    //   id: val.key,
-                                                    //   data: val.value,
-                                                    // ),
+                                                    child: EditTernakForm(
+                                                      width: width,
+                                                      kategori: widget.kategori.toLowerCase(),
+                                                      id: val.key,
+                                                      data: val.value,
+                                                    ),
                                                   );
                                                 },
                                               );
@@ -156,10 +186,26 @@ class _SapiTableState extends State<SapiTable> {
                                               Alerts.showAlertYesNo(
                                                 title: "Are you sure you want to delete this data?",
                                                 onPressYes: () async {
-                                                  db.child(val.key).remove();
-                                                  EasyLoading.showSuccess("Data berhasil di hapus.",
-                                                      dismissOnTap: true, duration: Duration(seconds: 3));
-                                                  Navigator.pop(context);
+                                                  EasyLoading.show(status: "Loading...");
+                                                  FirebaseStorage.instance
+                                                      .ref()
+                                                      .child("ternak")
+                                                      .child(widget.kategori.toLowerCase())
+                                                      .child(val.value['gambar'])
+                                                      .delete()
+                                                      .whenComplete(() {
+                                                    db.child(widget.kategori.toLowerCase()).child(val.key).remove().whenComplete(() {
+                                                      EasyLoading.showSuccess("Data berhasil di hapus.",
+                                                          dismissOnTap: true, duration: Duration(seconds: 3));
+                                                      Navigator.pop(context);
+                                                    }).onError((error, stackTrace) {
+                                                      EasyLoading.showSuccess("Error : ${error}.",
+                                                          dismissOnTap: true, duration: Duration(seconds: 3));
+                                                    });
+                                                  }).onError((error, stackTrace) {
+                                                    EasyLoading.showSuccess("Error : ${error}.",
+                                                        dismissOnTap: true, duration: Duration(seconds: 3));
+                                                  });
                                                 },
                                                 onPressNo: () {
                                                   Navigator.pop(context);

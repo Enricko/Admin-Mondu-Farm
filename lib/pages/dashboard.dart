@@ -1,4 +1,4 @@
-import 'package:admin_mondu_farm/pages/ternak/sapi.dart';
+import 'package:admin_mondu_farm/pages/ternak/ternak.dart';
 import 'package:admin_mondu_farm/pages/user.dart';
 import 'package:admin_mondu_farm/utils/color.dart';
 import 'package:admin_mondu_farm/utils/custom_extension.dart';
@@ -65,7 +65,13 @@ class _DashboardState extends State<Dashboard> {
       case "user":
         return UserTable();
       case "sapi":
-        return SapiTable();
+        return TableTernak(kategori: 'sapi',);
+      case "kuda":
+        return TableTernak(kategori: 'kuda',);
+      case "kerbau":
+        return TableTernak(kategori: 'kerbau',);
+      case "kambing":
+        return TableTernak(kategori: 'kambing',);
       default:
         return Container(
           child: Column(
@@ -74,6 +80,7 @@ class _DashboardState extends State<Dashboard> {
             children: [
               Text("404"),
               Text("Page not found"),
+              
             ],
           ),
         );
@@ -149,16 +156,36 @@ class _DashboardState extends State<Dashboard> {
               titleStyle: const TextStyle(color: Colors.black),
               selectedIcon: const Icon(Icons.filter_hdr_sharp),
             ),
-            // SideMenuItemDataTile(
-            //   isSelected: _currentPage == "dashboard",
-            //   onTap: () => setState(() => _currentPage = "dashboard"),
-            //   title: 'Item 4',
-            //   icon: const Icon(Icons.car_crash),
-            //   hoverColor: Warna.ungu,
-            //   highlightSelectedColor: Warna.ungu,
-            //   titleStyle: const TextStyle(color: Colors.black),
-            //   selectedIcon: const Icon(Icons.home),
-            // ),
+            SideMenuItemDataTile(
+              isSelected: _currentPage == "kuda",
+              onTap: () => setState(() => _currentPage = "kuda"),
+              title: 'kuda',
+              icon: const Icon(Icons.filter_hdr_outlined),
+              hoverColor: Warna.ungu,
+              highlightSelectedColor: Warna.ungu,
+              titleStyle: const TextStyle(color: Colors.black),
+              selectedIcon: const Icon(Icons.filter_hdr_sharp),
+            ),
+            SideMenuItemDataTile(
+              isSelected: _currentPage == "kerbau",
+              onTap: () => setState(() => _currentPage = "kerbau"),
+              title: 'kerbau',
+              icon: const Icon(Icons.filter_hdr_outlined),
+              hoverColor: Warna.ungu,
+              highlightSelectedColor: Warna.ungu,
+              titleStyle: const TextStyle(color: Colors.black),
+              selectedIcon: const Icon(Icons.filter_hdr_sharp),
+            ),
+            SideMenuItemDataTile(
+              isSelected: _currentPage == "kambing",
+              onTap: () => setState(() => _currentPage = "kambing"),
+              title: 'kambing',
+              icon: const Icon(Icons.filter_hdr_outlined),
+              hoverColor: Warna.ungu,
+              highlightSelectedColor: Warna.ungu,
+              titleStyle: const TextStyle(color: Colors.black),
+              selectedIcon: const Icon(Icons.filter_hdr_sharp),
+            ),
           ],
           footer: GestureDetector(
             onTap: () {

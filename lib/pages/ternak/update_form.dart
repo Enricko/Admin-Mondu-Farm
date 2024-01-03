@@ -15,20 +15,25 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 
-class AddTernakForm extends StatefulWidget {
-  const AddTernakForm({
+class EditTernakForm extends StatefulWidget {
+  const EditTernakForm({
     super.key,
     required this.width,
+    required this.kategori,
+    required this.id,
+    required this.data,
   });
 
   final double width;
+  final String kategori;
+  final String id;
+  final Map data;
 
   @override
-  State<AddTernakForm> createState() => _AddTernakFormState();
+  State<EditTernakForm> createState() => _EditTernakFormState();
 }
 
-class _AddTernakFormState extends State<AddTernakForm> {
-  DatabaseReference db = FirebaseDatabase.instance.ref().child('ternak').child("sapi");
+class _EditTernakFormState extends State<EditTernakForm> {
   TextEditingController usiaController = TextEditingController();
   TextEditingController tinggiController = TextEditingController();
   TextEditingController beratController = TextEditingController();
@@ -40,6 +45,10 @@ class _AddTernakFormState extends State<AddTernakForm> {
   @override
   void initState() {
     super.initState();
+    usiaController.text = widget.data['usia'].toString();
+    tinggiController.text = widget.data['tinggi'].toString();
+    beratController.text = widget.data['berat'].toString();
+    hargaController.text = widget.data['harga'].toString();
   }
 
   @override
@@ -65,38 +74,46 @@ class _AddTernakFormState extends State<AddTernakForm> {
     });
   }
 
-  insertData() async {
+  updateData() async {
     try {
-      var metadata = SettableMetadata(
-        contentType: "image/jpeg",
-      );
-      var imagefile = FirebaseStorage.instance
+      String? imageName;
+      if (webImage != null && file != null) {
+        var metadata = SettableMetadata(
+          contentType: "image/jpeg",
+        );
+        imageName = "${generateRandomString(10)}-${DateTime.now()}.png";
+        var imagefile = FirebaseStorage.instance
+            .ref()
+            .child("ternak")
+            .child(widget.kategori.toString().toLowerCase())
+            .child(imageName);
+
+        if (!kIsWeb) {
+          imagefile.putFile(file!, metadata);
+        } else {
+          imagefile.putData(webImage, metadata);
+        }
+        FirebaseStorage.instance.ref().child("ternak").child("sapi").child(widget.data['gambar']).delete();
+      }
+      Map<String, dynamic> val = {
+        'usia': int.parse(usiaController.text),
+        "tinggi": int.parse(tinggiController.text),
+        "berat": int.parse(beratController.text),
+        "harga": int.parse(hargaController.text.replaceAll(RegExp(r'[^0-9]'), '')),
+        'gambar': imageName ?? widget.data['gambar'],
+      };
+
+      FirebaseDatabase.instance
           .ref()
           .child("ternak")
-          .child("sapi")
-          .child("${generateRandomString(10)}-${DateTime.now()}.png");
-
-      UploadTask task = imagefile.putData(webImage);
-      if (!kIsWeb) {
-        UploadTask task = imagefile.putFile(file!);
-      }
-      TaskSnapshot snapshot = await task;
-      var url = await snapshot.ref.getDownloadURL();
-      if (url != null) {
-        Map<String, dynamic> val = {
-          'usia': int.parse(usiaController.text),
-          "tinggi": int.parse(tinggiController.text),
-          "berat": int.parse(beratController.text),
-          "harga": int.parse(hargaController.text.replaceAll(RegExp(r'[^0-9]'), '')),
-          'gambar': url,
-        };
-
-        FirebaseDatabase.instance.ref().child("ternak").child("sapi").push().set(val).whenComplete(() {
-          EasyLoading.showSuccess('Sapi telah di tambahkan', dismissOnTap: true, duration: Duration(seconds: 3));
-          Navigator.pop(context);
-          return;
-        });
-      }
+          .child(widget.kategori.toString().toLowerCase())
+          .child(widget.id)
+          .update(val)
+          .whenComplete(() {
+        EasyLoading.showSuccess('Sapi telah di rubah', dismissOnTap: true, duration: Duration(seconds: 3));
+        Navigator.pop(context);
+        return;
+      });
     } on Exception catch (e) {
       EasyLoading.showError('Error : ${e}', dismissOnTap: true, duration: Duration(seconds: 3));
       print(e);
@@ -123,7 +140,7 @@ class _AddTernakFormState extends State<AddTernakForm> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  "Tambah Ternak Sapi",
+                  "Tambah Ternak ${widget.kategori.toString().title()}",
                   style: GoogleFonts.openSans(fontSize: 15, fontWeight: FontWeight.bold),
                 ),
                 IconButton(
@@ -241,7 +258,7 @@ class _AddTernakFormState extends State<AddTernakForm> {
                               ),
                             ),
                             onPressed: () {
-                              if (_formKey.currentState!.validate() && (webImage != null && file != null)) {
+                              if (_formKey.currentState!.validate()) {
                                 // Prevent Multiple Clicked
                                 setState(() {
                                   ignorePointer = true;
@@ -252,7 +269,7 @@ class _AddTernakFormState extends State<AddTernakForm> {
                                   });
                                 });
                                 EasyLoading.show(status: "Loading...");
-                                insertData();
+                                updateData();
                               }
                             },
                             child: const Text(
