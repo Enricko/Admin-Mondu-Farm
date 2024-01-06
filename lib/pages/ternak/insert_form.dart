@@ -2,9 +2,11 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:admin_mondu_farm/pages/login.dart';
 import 'package:admin_mondu_farm/utils/color.dart';
 import 'package:admin_mondu_farm/utils/custom_extension.dart';
 import 'package:admin_mondu_farm/utils/text_field.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import "package:firebase_storage/firebase_storage.dart";
 import 'package:flutter/foundation.dart';
@@ -38,20 +40,6 @@ class _InsertTernakFormState extends State<InsertTernakForm> {
   final _formKey = GlobalKey<FormState>();
   bool ignorePointer = false;
   Timer? ignorePointerTimer;
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-
-    if (ignorePointerTimer != null) {
-      ignorePointerTimer!.cancel();
-    }
-  }
 
   File? file;
   ImagePicker image = ImagePicker();
@@ -110,6 +98,34 @@ class _InsertTernakFormState extends State<InsertTernakForm> {
     } on Exception catch (e) {
       EasyLoading.showError('Error : ${e}', dismissOnTap: true, duration: Duration(seconds: 3));
       print(e);
+    }
+  }
+
+  void cekUser() async {
+    await FirebaseAuth.instance.currentUser;
+    // Logic cek Data User apakah sudah pernah login
+    if (FirebaseAuth.instance.currentUser == null) {
+      FirebaseAuth.instance.currentUser;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => LoginPage()));
+      });
+    }
+  }
+
+  // Code yang bakal di jalankan pertama kali halaman ini dibuka
+  @override
+  void initState() {
+    // Cek User apakah user sudah pernah login sebelumnya
+    cekUser();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+
+    if (ignorePointerTimer != null) {
+      ignorePointerTimer!.cancel();
     }
   }
 

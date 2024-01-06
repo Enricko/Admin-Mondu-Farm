@@ -1,20 +1,42 @@
+import 'package:admin_mondu_farm/pages/login.dart';
 import 'package:admin_mondu_farm/pages/ternak/ternak.dart';
-import 'package:admin_mondu_farm/pages/user.dart';
+import 'package:admin_mondu_farm/pages/users/admin.dart';
+import 'package:admin_mondu_farm/pages/users/user.dart';
 import 'package:admin_mondu_farm/utils/color.dart';
 import 'package:admin_mondu_farm/utils/custom_extension.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_side_menu/flutter_side_menu.dart';
 
-class Dashboard extends StatefulWidget {
-  const Dashboard({super.key});
+class MainPage extends StatefulWidget {
+  const MainPage({super.key});
 
   @override
-  State<Dashboard> createState() => _DashboardState();
+  State<MainPage> createState() => _MainPageState();
 }
 
-class _DashboardState extends State<Dashboard> {
+class _MainPageState extends State<MainPage> {
   final _controller = SideMenuController();
   String _currentPage = "sapi";
+
+  void cekUser() async {
+    await FirebaseAuth.instance.currentUser;
+    // Logic cek Data User apakah sudah pernah login
+    if (FirebaseAuth.instance.currentUser == null) {
+      FirebaseAuth.instance.currentUser;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => LoginPage()));
+      });
+    }
+  }
+
+  // Code yang bakal di jalankan pertama kali halaman ini dibuka
+  @override
+  void initState() {
+    // Cek User apakah user sudah pernah login sebelumnya
+    cekUser();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +59,6 @@ class _DashboardState extends State<Dashboard> {
               child: Container(
                 margin: EdgeInsets.all(25),
                 padding: EdgeInsets.all(25),
-            
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(25),
                   color: Warna.biru,
@@ -64,14 +85,24 @@ class _DashboardState extends State<Dashboard> {
         return Container();
       case "user":
         return UserTable();
+      case "admin":
+        return AdminTable();
       case "sapi":
-        return TableTernak(kategori: 'sapi',);
+        return TableTernak(
+          kategori: 'sapi',
+        );
       case "kuda":
-        return TableTernak(kategori: 'kuda',);
+        return TableTernak(
+          kategori: 'kuda',
+        );
       case "kerbau":
-        return TableTernak(kategori: 'kerbau',);
+        return TableTernak(
+          kategori: 'kerbau',
+        );
       case "kambing":
-        return TableTernak(kategori: 'kambing',);
+        return TableTernak(
+          kategori: 'kambing',
+        );
       default:
         return Container(
           child: Column(
@@ -80,7 +111,6 @@ class _DashboardState extends State<Dashboard> {
             children: [
               Text("404"),
               Text("Page not found"),
-              
             ],
           ),
         );
@@ -120,12 +150,12 @@ class _DashboardState extends State<Dashboard> {
             ),
             SideMenuItemDataDivider(
               divider: Divider(color: Colors.black.withOpacity(0.3), height: 1),
-              padding:EdgeInsetsDirectional.symmetric(vertical: 10,horizontal: 5),
+              padding: EdgeInsetsDirectional.symmetric(vertical: 10, horizontal: 5),
             ),
             const SideMenuItemDataTitle(
               title: 'Tables',
               titleStyle: TextStyle(fontSize: 14),
-              padding:EdgeInsetsDirectional.symmetric(vertical: 10,horizontal: 5),
+              padding: EdgeInsetsDirectional.symmetric(vertical: 10, horizontal: 5),
             ),
             SideMenuItemDataTile(
               isSelected: _currentPage == "user",
@@ -137,14 +167,27 @@ class _DashboardState extends State<Dashboard> {
               icon: const Icon(Icons.people_alt_outlined),
               selectedIcon: const Icon(Icons.people_alt),
             ),
+            SideMenuItemDataTile(
+              isSelected: _currentPage == "admin",
+              onTap: () => setState(() => _currentPage = "admin"),
+              title: 'Admins',
+              hoverColor: Warna.ungu,
+              highlightSelectedColor: Warna.ungu,
+              titleStyle: const TextStyle(color: Colors.black),
+              icon: const Icon(Icons.people_alt_outlined),
+              selectedIcon: const Icon(Icons.people_alt),
+            ),
             SideMenuItemDataDivider(
-              divider: Divider(color: Colors.black.withOpacity(0.3), height: 1,),
-              padding:EdgeInsetsDirectional.symmetric(vertical: 10,horizontal: 5),
+              divider: Divider(
+                color: Colors.black.withOpacity(0.3),
+                height: 1,
+              ),
+              padding: EdgeInsetsDirectional.symmetric(vertical: 10, horizontal: 5),
             ),
             const SideMenuItemDataTitle(
               title: 'Hewan Ternak',
               titleStyle: TextStyle(fontSize: 14),
-              padding: EdgeInsetsDirectional.symmetric(vertical: 7,horizontal: 5),
+              padding: EdgeInsetsDirectional.symmetric(vertical: 7, horizontal: 5),
             ),
             SideMenuItemDataTile(
               isSelected: _currentPage == "sapi",
@@ -185,6 +228,28 @@ class _DashboardState extends State<Dashboard> {
               highlightSelectedColor: Warna.ungu,
               titleStyle: const TextStyle(color: Colors.black),
               selectedIcon: const Icon(Icons.filter_hdr_sharp),
+            ),
+            SideMenuItemDataDivider(
+              divider: Divider(
+                color: Colors.black.withOpacity(0.3),
+                height: 1,
+              ),
+              padding: EdgeInsetsDirectional.symmetric(vertical: 10, horizontal: 5),
+            ),
+            const SideMenuItemDataTitle(
+              title: 'System',
+              titleStyle: TextStyle(fontSize: 14),
+              padding: EdgeInsetsDirectional.symmetric(vertical: 7, horizontal: 5),
+            ),
+            SideMenuItemDataTile(
+              isSelected: _currentPage == "logout",
+              onTap: () {},
+              title: 'Logout',
+              icon: const Icon(Icons.power_settings_new),
+              hoverColor: Warna.ungu,
+              highlightSelectedColor: Warna.ungu,
+              titleStyle: const TextStyle(color: Colors.black),
+              selectedIcon: const Icon(Icons.power_settings_new),
             ),
           ],
           footer: GestureDetector(

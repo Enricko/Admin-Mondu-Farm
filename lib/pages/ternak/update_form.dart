@@ -2,9 +2,11 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:admin_mondu_farm/pages/login.dart';
 import 'package:admin_mondu_farm/utils/color.dart';
 import 'package:admin_mondu_farm/utils/custom_extension.dart';
 import 'package:admin_mondu_farm/utils/text_field.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import "package:firebase_storage/firebase_storage.dart";
 import 'package:flutter/foundation.dart';
@@ -49,6 +51,9 @@ class _EditTernakFormState extends State<EditTernakForm> {
     tinggiController.text = widget.data['tinggi'].toString();
     beratController.text = widget.data['berat'].toString();
     hargaController.text = widget.data['harga'].toString();
+
+    // Cek User apakah user sudah pernah login sebelumnya
+    cekUser();
   }
 
   @override
@@ -119,6 +124,18 @@ class _EditTernakFormState extends State<EditTernakForm> {
       print(e);
     }
   }
+
+  void cekUser() async {
+    await FirebaseAuth.instance.currentUser;
+    // Logic cek Data User apakah sudah pernah login
+    if (FirebaseAuth.instance.currentUser == null) {
+      FirebaseAuth.instance.currentUser;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => LoginPage()));
+      });
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {

@@ -1,10 +1,12 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:admin_mondu_farm/pages/login.dart';
 import 'package:admin_mondu_farm/utils/alerts.dart';
 import 'package:admin_mondu_farm/utils/color.dart';
 import 'package:admin_mondu_farm/utils/custom_extension.dart';
 import 'package:admin_mondu_farm/utils/text_field.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/services.dart';
@@ -31,6 +33,25 @@ class _UserTableState extends State<UserTable> {
     });
   }
 
+  void cekUser() async {
+    await FirebaseAuth.instance.currentUser;
+    // Logic cek Data User apakah sudah pernah login
+    if (FirebaseAuth.instance.currentUser == null) {
+      FirebaseAuth.instance.currentUser;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => LoginPage()));
+      });
+    }
+  }
+
+  // Code yang bakal di jalankan pertama kali halaman ini dibuka
+  @override
+  void initState() {
+    // Cek User apakah user sudah pernah login sebelumnya
+    cekUser();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width;
@@ -45,19 +66,20 @@ class _UserTableState extends State<UserTable> {
             style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900),
           ),
         ),
-        ElevatedButton(
-          onPressed: () async {
-            final key = db.push().key;
+        // ElevatedButton(
+        //   onPressed: () async {
+        //     final key = db.push().key;
 
-            Random random = new Random();
-            await db.child(key!).set({
-              "nama": generateRandomString(10),
-              "email": generateRandomString(5) + "@gmail.com",
-              "no_telpon": random.nextInt(999999),
-            });
-          },
-          child: Text("Tambah Dummy Data"),
-        ),
+        //     Random random = new Random();
+        //     await db.child(key!).set({
+        //       "nama": generateRandomString(10),
+        //       "email": generateRandomString(5) + "@gmail.com",
+        //       "no_telpon": random.nextInt(999999),
+        //       "level": "user"
+        //     });
+        //   },
+        //   child: Text("Tambah Dummy Data"),
+        // ),
         SizedBox(
           height: 25,
         ),
@@ -67,7 +89,8 @@ class _UserTableState extends State<UserTable> {
             if (snapshot.hasData && (snapshot.data!).snapshot.value != null) {
               // Variable data mempermudah memanggil data pada database
               Map<dynamic, dynamic> data =
-                  Map<dynamic, dynamic>.from((snapshot.data! as DatabaseEvent).snapshot.value as Map<dynamic, dynamic>);
+                  Map<dynamic, dynamic>.from((snapshot.data!).snapshot.value as Map<dynamic, dynamic>);
+              data.removeWhere((key, value) => value['level'] == "admin");
               return Expanded(
                 child: Column(
                   children: [
@@ -85,7 +108,6 @@ class _UserTableState extends State<UserTable> {
                                 columns: const [
                                   DataColumn(label: Text("No")),
                                   DataColumn(label: Text("Nama")),
-                                  DataColumn(label: Text("Email")),
                                   DataColumn(label: Text("No Telphone")),
                                   DataColumn(label: Text("Action")),
                                 ],
@@ -95,9 +117,8 @@ class _UserTableState extends State<UserTable> {
                                       1;
                                   return DataRow(cells: [
                                     DataCell(Text(numberedTable.toString())),
-                                    DataCell(Text(val.value['nama'])),
-                                    DataCell(Text(val.value['email']!)),
-                                    DataCell(Text(val.value['no_telpon']!.toString())),
+                                    DataCell(Text(val.value['name'])),
+                                    DataCell(Text(val.value['phone_number']!.toString())),
                                     DataCell(Row(
                                       children: [
                                         Tooltip(
@@ -331,11 +352,23 @@ class _EditUserFormState extends State<EditUserForm> {
   bool ignorePointer = false;
   Timer? ignorePointerTimer;
 
+  void cekUser() async {
+    await FirebaseAuth.instance.currentUser;
+    // Logic cek Data User apakah sudah pernah login
+    if (FirebaseAuth.instance.currentUser == null) {
+      FirebaseAuth.instance.currentUser;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => LoginPage()));
+      });
+    }
+  }
+
   @override
   void initState() {
     super.initState();
-    namaController.text = widget.data['nama'];
-    noTelponController.text = widget.data['no_telpon'].toString();
+    cekUser();
+    namaController.text = widget.data['name'];
+    noTelponController.text = widget.data['phone_number'].toString();
   }
 
   @override
@@ -394,7 +427,16 @@ class _EditUserFormState extends State<EditUserForm> {
                           const SizedBox(
                             height: 5,
                           ),
-                          CustomTextField(controller: namaController, hint: "Nama", type: TextInputType.text),
+                          CustomTextField(
+                            controller: namaController,
+                            hint: "Nama",
+                            type: TextInputType.text,
+                            validator: (value) {
+                              if (value == null || value == "") {
+                                return "Mohon form-nya diisi.";
+                              }
+                            },
+                          ),
                           CustomTextField(
                             controller: noTelponController,
                             hint: "No Telpon",
@@ -402,6 +444,11 @@ class _EditUserFormState extends State<EditUserForm> {
                             inputFormatters: [
                               FilteringTextInputFormatter.digitsOnly,
                             ],
+                            validator: (value) {
+                              if (value == null || value == "") {
+                                return "Mohon form-nya diisi.";
+                              }
+                            },
                           ),
                         ],
                       ),
@@ -432,10 +479,9 @@ class _EditUserFormState extends State<EditUserForm> {
                                   });
                                 });
                                 EasyLoading.show(status: "Loading...");
-                                print(noTelponController.text);
                                 FirebaseDatabase.instance.ref().child("users").child(widget.id).update({
-                                  "nama": namaController.text,
-                                  "no_telpon": noTelponController.text,
+                                  "name": namaController.text,
+                                  "phone_number": noTelponController.text,
                                 }).whenComplete(() {
                                   EasyLoading.showSuccess("Data User Telah di Ubah.",
                                       dismissOnTap: true, duration: Duration(seconds: 3));

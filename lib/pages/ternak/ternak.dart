@@ -1,10 +1,12 @@
 import 'dart:async';
 
+import 'package:admin_mondu_farm/pages/login.dart';
 import 'package:admin_mondu_farm/pages/ternak/insert_form.dart';
 import 'package:admin_mondu_farm/pages/ternak/update_form.dart';
 import 'package:admin_mondu_farm/utils/alerts.dart';
 import 'package:admin_mondu_farm/utils/color.dart';
 import 'package:admin_mondu_farm/utils/custom_extension.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -40,9 +42,27 @@ class _TableTernakState extends State<TableTernak> {
   Future<String> getImageFromStorage(String pathName) {
     FirebaseStorage storage = FirebaseStorage.instance;
     Reference ref = storage.ref().child("ternak").child(widget.kategori.toLowerCase()).child(pathName);
-    // String imageUrl = ref.getDownloadURL();
 
     return ref.getDownloadURL();
+  }
+
+  void cekUser() async {
+    await FirebaseAuth.instance.currentUser;
+    // Logic cek Data User apakah sudah pernah login
+    if (FirebaseAuth.instance.currentUser == null) {
+      FirebaseAuth.instance.currentUser;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => LoginPage()));
+      });
+    }
+  }
+
+  // Code yang bakal di jalankan pertama kali halaman ini dibuka
+  @override
+  void initState() {
+    // Cek User apakah user sudah pernah login sebelumnya
+    cekUser();
+    super.initState();
   }
 
   @override
@@ -194,7 +214,11 @@ class _TableTernakState extends State<TableTernak> {
                                                       .child(val.value['gambar'])
                                                       .delete()
                                                       .whenComplete(() {
-                                                    db.child(widget.kategori.toLowerCase()).child(val.key).remove().whenComplete(() {
+                                                    db
+                                                        .child(widget.kategori.toLowerCase())
+                                                        .child(val.key)
+                                                        .remove()
+                                                        .whenComplete(() {
                                                       EasyLoading.showSuccess("Data berhasil di hapus.",
                                                           dismissOnTap: true, duration: Duration(seconds: 3));
                                                       Navigator.pop(context);
