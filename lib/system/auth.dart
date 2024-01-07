@@ -41,8 +41,8 @@ class Auth {
       }).onError((error, stackTrace) {
         EasyLoading.showError('Email/Password anda salah!', dismissOnTap: true, duration: const Duration(seconds: 5));
         return null;
-      }).timeout(Duration(seconds: 1), onTimeout: () {
-        print("object");
+      }).timeout(Duration(seconds: 10), onTimeout: () {
+        EasyLoading.showError('Maaf tunggu lagi beberapa saat!', dismissOnTap: true);
       });
 
       // Mengarah ke halaman dashboard jika berhasil
@@ -83,6 +83,8 @@ class Auth {
         }).onError((error, stackTrace) {
           // Jika logic mengalami error, kode yang di bawah ini bakal jalan
           EasyLoading.showError('$error', dismissOnTap: true, duration: const Duration(seconds: 5));
+        }).timeout(Duration(seconds: 10), onTimeout: () {
+          EasyLoading.showError('Maaf tunggu lagi beberapa saat!', dismissOnTap: true);
         });
       }).onError((error, stackTrace) {
         // Jika logic mengalami error, kode yang di bawah ini bakal jalan

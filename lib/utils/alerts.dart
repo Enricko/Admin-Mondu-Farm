@@ -92,6 +92,64 @@ class Alerts {
     );
   }
 
+  static showAlertYesNoLogout(
+      {required String title,
+      required VoidCallback onPressYes,
+      required VoidCallback onPressNo,
+      required BuildContext context}) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return AlertDialog(
+          icon: SizedBox(
+            height: 80,
+            width: 80,
+            child: Icon(Icons.logout),
+          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+          // judul
+          title: Text(
+            title,
+            style: TextStyle(fontSize: 20),
+          ),
+          actions: [
+            // tombel yes
+            SizedBox(
+              width: 90,
+              child: ElevatedButton(
+                style: ButtonStyle(
+                  shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(4))),
+                  backgroundColor: MaterialStateProperty.all(Colors.red),
+                ),
+                onPressed: onPressYes,
+                child: Text('Delete', style: TextStyle(color: Colors.white)),
+              ),
+            ),
+            //tombol no
+            SizedBox(
+              width: 90,
+              child: TextButton(
+                style: ButtonStyle(
+                    shape: MaterialStateProperty.all(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(4),
+                    side: BorderSide(
+                      color: Colors.black38,
+                    ),
+                  ),
+                )),
+                onPressed: onPressNo,
+                child: Text('No', style: TextStyle(color: Colors.black38)),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   // static showAlertYesNoConfirm(
   //     {required String title,
   //     required VoidCallback onPressYes,

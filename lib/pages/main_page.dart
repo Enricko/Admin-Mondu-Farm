@@ -1,15 +1,25 @@
+import 'package:admin_mondu_farm/pages/chat.dart';
+import 'package:admin_mondu_farm/pages/dashboard.dart';
 import 'package:admin_mondu_farm/pages/login.dart';
 import 'package:admin_mondu_farm/pages/ternak/ternak.dart';
 import 'package:admin_mondu_farm/pages/users/admin.dart';
 import 'package:admin_mondu_farm/pages/users/user.dart';
+import 'package:admin_mondu_farm/utils/alerts.dart';
 import 'package:admin_mondu_farm/utils/color.dart';
 import 'package:admin_mondu_farm/utils/custom_extension.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_side_menu/flutter_side_menu.dart';
 
 class MainPage extends StatefulWidget {
-  const MainPage({super.key});
+  const MainPage({
+    super.key,
+    this.uid = "",
+    this.route = "chat",
+  });
+  final String uid;
+  final String route;
 
   @override
   State<MainPage> createState() => _MainPageState();
@@ -17,7 +27,6 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   final _controller = SideMenuController();
-  String _currentPage = "sapi";
 
   void cekUser() async {
     await FirebaseAuth.instance.currentUser;
@@ -44,7 +53,7 @@ class _MainPageState extends State<MainPage> {
     var height = MediaQuery.of(context).size.height;
     return Scaffold(
       appBar: AppBar(
-        title: Text(_currentPage.title()),
+        title: Text(widget.route.title()),
         backgroundColor: Warna.biru,
         elevation: 1,
         shadowColor: Colors.black,
@@ -80,9 +89,13 @@ class _MainPageState extends State<MainPage> {
   }
 
   Widget bodyWidget() {
-    switch (_currentPage) {
+    switch (widget.route) {
       case "dashboard":
-        return Container();
+        return DashboardPage();
+      case "chat":
+        return ChatPage(
+          uid: widget.uid,
+        );
       case "user":
         return UserTable();
       case "admin":
@@ -126,11 +139,80 @@ class _MainPageState extends State<MainPage> {
       hasResizerToggle: false,
       builder: (data) {
         return SideMenuData(
-          header: const Text('Header'),
+          header: Container(
+            margin: EdgeInsets.symmetric(vertical: 15),
+            child: StreamBuilder(
+              stream:
+                  FirebaseDatabase.instance.ref().child("users").child(FirebaseAuth.instance.currentUser!.uid).onValue,
+              builder: (context, snapshot) {
+                if (snapshot.hasData && (snapshot.data!).snapshot.value != null) {
+                  // Variable data mempermudah memanggil data pada database
+                  Map<dynamic, dynamic> data = Map<dynamic, dynamic>.from(
+                      (snapshot.data! as DatabaseEvent).snapshot.value as Map<dynamic, dynamic>);
+                  return Column(
+                    children: [
+                      Container(
+                        width: 50,
+                        height: 50,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(color: Warna.ungu, borderRadius: BorderRadius.circular(50)),
+                        child: Text("${data['nama'][0]}"),
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Container(
+                        alignment: Alignment.center,
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text("${data['nama']}"),
+                        ),
+                      ),
+                    ],
+                  );
+                }
+                if (snapshot.hasData) {
+                  return Column(
+                    children: [
+                      Container(
+                        width: 50,
+                        height: 50,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(color: Warna.ungu, borderRadius: BorderRadius.circular(50)),
+                        child: Text("-"),
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Container(
+                        alignment: Alignment.center,
+                        child: Text("-"),
+                      ),
+                    ],
+                  );
+                }
+                return Center(
+                  child: CircularProgressIndicator(),
+                );
+              },
+            ),
+          ),
           items: [
+            SideMenuItemDataDivider(
+              divider: Divider(color: Colors.black.withOpacity(0.3), height: 1),
+              padding: EdgeInsetsDirectional.symmetric(vertical: 10, horizontal: 5),
+            ),
             SideMenuItemDataTile(
-              isSelected: _currentPage == "dashboard",
-              onTap: () => setState(() => _currentPage = "dashboard"),
+              isSelected: ["dashboard","chat"].contains(widget.route),
+              onTap: () {
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(
+                    builder: (context) => MainPage(
+                      route: "dashboard",
+                    ),
+                  ),
+                );
+              },
               title: 'Dashboard',
               hoverColor: Warna.ungu,
               highlightSelectedColor: Warna.ungu,
@@ -158,8 +240,16 @@ class _MainPageState extends State<MainPage> {
               padding: EdgeInsetsDirectional.symmetric(vertical: 10, horizontal: 5),
             ),
             SideMenuItemDataTile(
-              isSelected: _currentPage == "user",
-              onTap: () => setState(() => _currentPage = "user"),
+              isSelected: widget.route == "user",
+              onTap: () {
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(
+                    builder: (context) => MainPage(
+                      route: "user",
+                    ),
+                  ),
+                );
+              },
               title: 'Users',
               hoverColor: Warna.ungu,
               highlightSelectedColor: Warna.ungu,
@@ -168,8 +258,16 @@ class _MainPageState extends State<MainPage> {
               selectedIcon: const Icon(Icons.people_alt),
             ),
             SideMenuItemDataTile(
-              isSelected: _currentPage == "admin",
-              onTap: () => setState(() => _currentPage = "admin"),
+              isSelected: widget.route == "admin",
+              onTap: () {
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(
+                    builder: (context) => MainPage(
+                      route: "admin",
+                    ),
+                  ),
+                );
+              },
               title: 'Admins',
               hoverColor: Warna.ungu,
               highlightSelectedColor: Warna.ungu,
@@ -190,8 +288,16 @@ class _MainPageState extends State<MainPage> {
               padding: EdgeInsetsDirectional.symmetric(vertical: 7, horizontal: 5),
             ),
             SideMenuItemDataTile(
-              isSelected: _currentPage == "sapi",
-              onTap: () => setState(() => _currentPage = "sapi"),
+              isSelected: widget.route == "sapi",
+              onTap: () {
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(
+                    builder: (context) => MainPage(
+                      route: "sapi",
+                    ),
+                  ),
+                );
+              },
               title: 'Sapi',
               icon: const Icon(Icons.filter_hdr_outlined),
               hoverColor: Warna.ungu,
@@ -200,8 +306,16 @@ class _MainPageState extends State<MainPage> {
               selectedIcon: const Icon(Icons.filter_hdr_sharp),
             ),
             SideMenuItemDataTile(
-              isSelected: _currentPage == "kuda",
-              onTap: () => setState(() => _currentPage = "kuda"),
+              isSelected: widget.route == "kuda",
+              onTap: () {
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(
+                    builder: (context) => MainPage(
+                      route: "kuda",
+                    ),
+                  ),
+                );
+              },
               title: 'kuda',
               icon: const Icon(Icons.filter_hdr_outlined),
               hoverColor: Warna.ungu,
@@ -210,8 +324,16 @@ class _MainPageState extends State<MainPage> {
               selectedIcon: const Icon(Icons.filter_hdr_sharp),
             ),
             SideMenuItemDataTile(
-              isSelected: _currentPage == "kerbau",
-              onTap: () => setState(() => _currentPage = "kerbau"),
+              isSelected: widget.route == "kerbau",
+              onTap: () {
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(
+                    builder: (context) => MainPage(
+                      route: "kerbau",
+                    ),
+                  ),
+                );
+              },
               title: 'kerbau',
               icon: const Icon(Icons.filter_hdr_outlined),
               hoverColor: Warna.ungu,
@@ -220,8 +342,16 @@ class _MainPageState extends State<MainPage> {
               selectedIcon: const Icon(Icons.filter_hdr_sharp),
             ),
             SideMenuItemDataTile(
-              isSelected: _currentPage == "kambing",
-              onTap: () => setState(() => _currentPage = "kambing"),
+              isSelected: widget.route == "kambing",
+              onTap: () {
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(
+                    builder: (context) => MainPage(
+                      route: "kambing",
+                    ),
+                  ),
+                );
+              },
               title: 'kambing',
               icon: const Icon(Icons.filter_hdr_outlined),
               hoverColor: Warna.ungu,
@@ -242,8 +372,20 @@ class _MainPageState extends State<MainPage> {
               padding: EdgeInsetsDirectional.symmetric(vertical: 7, horizontal: 5),
             ),
             SideMenuItemDataTile(
-              isSelected: _currentPage == "logout",
-              onTap: () {},
+              isSelected: widget.route == "logout",
+              onTap: () {
+                Alerts.showAlertYesNoLogout(
+                    title: "Are you sure you want to Logout?",
+                    onPressYes: () async {
+                      await FirebaseAuth.instance.signOut();
+                      Navigator.pop(context);
+                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (ctx) => LoginPage()));
+                    },
+                    onPressNo: () {
+                      Navigator.pop(context);
+                    },
+                    context: context);
+              },
               title: 'Logout',
               icon: const Icon(Icons.power_settings_new),
               hoverColor: Warna.ungu,
