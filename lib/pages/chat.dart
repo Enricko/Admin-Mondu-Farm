@@ -11,114 +11,179 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'dart:typed_data' show Uint8List;
 
+import 'package:intl/intl.dart';
+
 typedef _Fn = void Function();
 
 class ChatPage extends StatefulWidget {
-  const ChatPage({super.key, required this.uid});
-  final String uid;
+  const ChatPage({super.key, required this.idUser});
+  final String idUser;
 
   @override
   State<ChatPage> createState() => _ChatPageState();
 }
 
 class _ChatPageState extends State<ChatPage> {
+  Future<Map<dynamic, dynamic>>? dataUser;
+  @override
+  void initState() {
+    super.initState();
+    setState(() {
+      dataUser = FirebaseDatabase.instance
+          .ref()
+          .child("users")
+          .child("${widget.idUser}")
+          .get()
+          .then((value) => value.value as Map<dynamic, dynamic>);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width;
-    return Column(
-      children: [
-        Container(
-          child: Row(
+    return FutureBuilder(
+      future: dataUser,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return Column(
             children: [
               Container(
-                decoration: BoxDecoration(
-                  color: Warna.ungu,
-                  borderRadius: BorderRadius.circular(50),
-                ),
-                child: IconButton(
-                  onPressed: () {
-                    Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(
-                        builder: ((context) => MainPage(
-                              route: "dashboard",
-                            )),
+                child: Row(
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Warna.ungu,
+                        borderRadius: BorderRadius.circular(50),
                       ),
-                    );
-                  },
-                  icon: const Icon(Icons.arrow_back_ios_new),
+                      child: IconButton(
+                        onPressed: () {
+                          Navigator.of(context).pushReplacement(
+                            MaterialPageRoute(
+                              builder: ((context) => MainPage(
+                                    route: "dashboard",
+                                  )),
+                            ),
+                          );
+                        },
+                        icon: const Icon(Icons.arrow_back_ios_new),
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 15,
+                    ),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "${snapshot.data!['nama']}",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 24,
+                          ),
+                        ),
+                        Text(
+                          "${snapshot.data!['no_telpon']}",
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
               ),
               const SizedBox(
-                width: 15,
+                height: 25,
               ),
-              const Text(
-                "Nama",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 24,
-                ),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(
-          height: 25,
-        ),
-        Expanded(
-          child: Container(
-            padding: const EdgeInsets.symmetric(vertical: 15),
-            decoration: BoxDecoration(
-              color: Warna.biruUngu,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: StreamBuilder(
-              stream: FirebaseDatabase.instance.ref().child("pesan").child("-NnJThg-A5k5iNE8Z1VT").onValue,
-              builder: (context, snapshot) {
-                if (snapshot.hasData && (snapshot.data!).snapshot.value != null) {
-                  // Variable data mempermudah memanggil data pada database
-                  Map<dynamic, dynamic> data = Map<dynamic, dynamic>.from(
-                      (snapshot.data! as DatabaseEvent).snapshot.value as Map<dynamic, dynamic>);
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 15),
+                  decoration: BoxDecoration(
+                    color: Warna.biruUngu,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: StreamBuilder(
+                    stream: FirebaseDatabase.instance.ref().child("pesan").child("-NnJThg-A5k5iNE8Z1VT").onValue,
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData && (snapshot.data!).snapshot.value != null) {
+                        // Variable data mempermudah memanggil data pada database
+                        Map<dynamic, dynamic> data = Map<dynamic, dynamic>.from(
+                            (snapshot.data! as DatabaseEvent).snapshot.value as Map<dynamic, dynamic>);
 
-                  List<Map<dynamic, dynamic>> dataList = [];
-                  data.forEach((key, value) {
-                    // Setiap data yang di perulangkan bakal di simpan ke dalam list
-                    final currentData = Map<String, dynamic>.from(value);
-                    // Mensetting variable dengan total lembur dan gaji)
-                    dataList.add({
-                      'uid': key,
-                      'pesan': currentData['pesan'],
-                      'tanggal': currentData['tanggal'],
-                      'type': currentData['type'],
-                    });
-                  });
-                  return ListView.builder(
-                    itemCount: dataList.length,
-                    shrinkWrap: true,
-                    itemBuilder: (context, index) {
-                      return Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 15),
-                        child: Row(
-                          mainAxisAlignment: index % 2 == 0 ? MainAxisAlignment.end : MainAxisAlignment.start,
-                          children: <Widget>[AudioChatWidget(data: dataList[index])],
-                        ),
+                        // List<Map<dynamic, dynamic>> dataList = [];
+                        // data.forEach((key, value) {
+                        //   // Setiap data yang di perulangkan bakal di simpan ke dalam list
+                        //   final currentData = Map<String, dynamic>.from(value);
+                        //   // Mensetting variable dengan total lembur dan gaji)
+                        //   dataList.add({
+                        //     'uid': key,
+                        //     'durasi': currentData['durasi'],
+                        //     'pesan': currentData['pesan'],
+                        //     'pesan_dari': currentData['pesan_dari'],
+                        //     'tanggal': currentData['tanggal'],
+                        //     'type': currentData['type'],
+                        //   });
+                        // });
+                        // dataList.sort((a, b) {
+                        //   var aDate = DateTime.parse(a["tanggal"]);
+                        //   var bDate = DateTime.parse(b["tanggal"]);
+                        //   return aDate.compareTo(bDate);
+                        // });
+                        return SingleChildScrollView(
+                          reverse: true,
+                          child: Column(
+                              children: data.entries.map((e) {
+                            return Container(
+                              margin: const EdgeInsets.symmetric(horizontal: 15),
+                              child: Row(
+                                mainAxisAlignment:
+                                    e.value['pesan_dari'] == "admin" ? MainAxisAlignment.end : MainAxisAlignment.start,
+                                children: <Widget>[
+                                  AudioChatWidget(data: e.value, maxDurasi: durationStringToDouble(e.value['durasi']))
+                                ],
+                              ),
+                            );
+                          }).toList()),
+                        );
+                      }
+                      if (snapshot.hasData) {
+                        return Center(
+                          child: Text("Belum ada pesan masuk"),
+                        );
+                      }
+                      return Center(
+                        child: CircularProgressIndicator(),
                       );
                     },
-                  );
-                }
-                if (snapshot.hasData) {
-                  return Center(
-                    child: Text("Belum ada pesan masuk"),
-                  );
-                }
-                return Center(
-                  child: CircularProgressIndicator(),
-                );
-              },
-            ),
-          ),
-        ),
-        const RecordChatWidget(),
-      ],
+                  ),
+                ),
+              ),
+              RecordChatWidget(idUser: widget.idUser,),
+            ],
+          );
+        }
+        return Center(
+          child: CircularProgressIndicator(),
+        );
+      },
     );
+  }
+
+  double durationStringToDouble(String durasi) {
+    double durationDouble = 1.0;
+    String durationString = durasi; // Example duration string in mm:ss:SS format
+
+    List<String> parts = durationString.split(':');
+
+    // Assuming the string format is "mm:ss:SS"
+    int minutes = int.parse(parts[0]);
+    int seconds = int.parse(parts[1]);
+    int milliseconds = int.parse(parts[2]);
+
+    // Convert the duration to a double representation in milliseconds
+    durationDouble = (minutes * 60 * 1000) + (seconds * 1000) + milliseconds as double;
+    return durationDouble;
   }
 }

@@ -21,8 +21,9 @@ import 'package:intl/intl.dart' show DateFormat;
 import 'package:flutter/foundation.dart' show kIsWeb;
 
 class AudioChatWidget extends StatefulWidget {
-  const AudioChatWidget({super.key, required this.data});
-  final Map<dynamic,dynamic> data;
+  const AudioChatWidget({super.key, required this.data, required this.maxDurasi});
+  final Map<dynamic, dynamic> data;
+  final double maxDurasi;
 
   @override
   State<AudioChatWidget> createState() => _AudioChatWidgetState();
@@ -106,14 +107,12 @@ class _AudioChatWidgetState extends State<AudioChatWidget> {
   FlutterSoundPlayer playerModule = FlutterSoundPlayer();
   FlutterSoundRecorder recorderModule = FlutterSoundRecorder();
 
-  String _recorderTxt = '00:00:00';
   String _playerTxt = '00:00:00';
-  double? _dbLevel;
 
   double sliderCurrentPosition = 0.0;
   double maxDuration = 1.0;
   Media? _media = Media.urlFile;
-  Codec _codec = Codec.aacMP4;
+  Codec _codec = Codec.mp3;
 
   bool? _encoderSupported = true; // Optimist
   bool _decoderSupported = true; // Optimist
@@ -184,6 +183,9 @@ class _AudioChatWidgetState extends State<AudioChatWidget> {
   @override
   void initState() {
     super.initState();
+    setState(() {
+      maxDuration = widget.maxDurasi;
+    });
     init();
   }
 
@@ -231,99 +233,6 @@ class _AudioChatWidgetState extends State<AudioChatWidget> {
     }
   }
 
-  void startRecorder() async {
-    try {
-      // Request Microphone permission if needed
-      if (!kIsWeb) {
-        var status = await Permission.microphone.request();
-        if (status != PermissionStatus.granted) {
-          throw RecordingPermissionException('Microphone permission not granted');
-        }
-      }
-      var path = '';
-      if (!kIsWeb) {
-        // var tempDir = await getTemporaryDirectory();
-        // path = '${tempDir.path}/flutter_sound${ext[_codec.index]}';
-      } else {
-        path = '_flutter_sound${ext[_codec.index]}';
-      }
-
-      if (_media == Media.stream) {
-        assert(_codec == Codec.pcm16);
-        if (!kIsWeb) {
-          var outputFile = File(path);
-          if (outputFile.existsSync()) {
-            await outputFile.delete();
-          }
-          sink = outputFile.openWrite();
-        } else {
-          sink = null; // TODO
-        }
-        recordingDataController = StreamController<Food>();
-        _recordingDataSubscription = recordingDataController!.stream.listen((buffer) {
-          if (buffer is FoodData) {
-            sink!.add(buffer.data!);
-          }
-        });
-        await recorderModule.startRecorder(
-          toStream: recordingDataController!.sink,
-          codec: _codec,
-          numChannels: 1,
-          sampleRate: tSTREAMSAMPLERATE, //tSAMPLERATE,
-        );
-      } else {
-        await recorderModule.startRecorder(
-          toFile: path,
-          codec: _codec,
-          bitRate: 8000,
-          numChannels: 1,
-          sampleRate: (_codec == Codec.pcm16) ? tSTREAMSAMPLERATE : tSAMPLERATE,
-        );
-      }
-
-      recorderModule.logger.d('startRecorder');
-
-      _recorderSubscription = recorderModule.onProgress!.listen((e) {
-        var date = DateTime.fromMillisecondsSinceEpoch(e.duration.inMilliseconds, isUtc: true);
-        var txt = DateFormat('mm:ss:SS', 'en_GB').format(date);
-
-        setState(() {
-          _recorderTxt = txt.substring(0, 8);
-          _dbLevel = e.decibels;
-        });
-      });
-
-      setState(() {
-        _isRecording = true;
-        _path[_codec.index] = path;
-      });
-    } on Exception catch (err) {
-      recorderModule.logger.e('startRecorder error: $err');
-      setState(() {
-        stopRecorder();
-        _isRecording = false;
-        cancelRecordingDataSubscription();
-        cancelRecorderSubscriptions();
-      });
-    }
-  }
-
-  void stopRecorder() async {
-    try {
-      await recorderModule.stopRecorder();
-      recorderModule.logger.d('stopRecorder');
-      cancelRecorderSubscriptions();
-      cancelRecordingDataSubscription();
-    } on Exception catch (err) {
-      recorderModule.logger.d('stopRecorder error: $err');
-    }
-    print("_Path : $_path");
-
-    setState(() {
-      _isRecording = false;
-    });
-  }
-
   Future<bool> fileExists(String path) async {
     return await File(path).exists();
   }
@@ -346,8 +255,8 @@ class _AudioChatWidgetState extends State<AudioChatWidget> {
   void _addListeners() {
     cancelPlayerSubscriptions();
     _playerSubscription = playerModule.onProgress!.listen((e) {
-      maxDuration = e.duration.inMilliseconds.toDouble();
-      if (maxDuration <= 0) maxDuration = 0.0;
+      // maxDuration = e.duration.inMilliseconds.toDouble();
+      // if (maxDuration <= 0) maxDuration = 0.0;
 
       sliderCurrentPosition = min(e.position.inMilliseconds.toDouble(), maxDuration);
       if (sliderCurrentPosition < 0.0) {
@@ -356,6 +265,8 @@ class _AudioChatWidgetState extends State<AudioChatWidget> {
 
       var date = DateTime.fromMillisecondsSinceEpoch(e.position.inMilliseconds, isUtc: true);
       var txt = DateFormat('mm:ss:SS', 'en_GB').format(date);
+      var dateMax = DateTime.fromMillisecondsSinceEpoch(maxDuration.toInt(), isUtc: true);
+      var txtMax = DateFormat('mm:ss:SS', 'en_GB').format(dateMax);
       setState(() {
         _playerTxt = txt.substring(0, 8);
       });
@@ -372,7 +283,7 @@ class _AudioChatWidgetState extends State<AudioChatWidget> {
     return bytes;
   }
 
-  final int blockSize = 4096;
+  final int blockSize = 1;
   Future<void> feedHim(String path) async {
     var buffer = await _readFileByte(path);
     //var buffer = await getAssetData('assets/samples/sample.pcm');
@@ -389,67 +300,25 @@ class _AudioChatWidgetState extends State<AudioChatWidget> {
 
   Future<void> startPlayer() async {
     try {
-      Uint8List? dataBuffer;
       String? audioFilePath;
       var codec = _codec;
-      if (_media == Media.file || _media == Media.stream) {
-        // Do we want to play from buffer or from file ?
-        if (kIsWeb || await fileExists(_path[codec.index]!)) {
-          audioFilePath = _path[codec.index];
-        }
-      } else if (_media == Media.buffer) {
-        // Do we want to play from buffer or from file ?
-        if (await fileExists(_path[codec.index]!)) {
-          dataBuffer = await makeBuffer(_path[codec.index]!);
-          if (dataBuffer == null) {
-            throw Exception('Unable to create the buffer');
-          }
-        }
-      } else if (_media == Media.urlFile) {
+      if (_media == Media.urlFile) {
         // We have to play an example audio file loaded via a URL
-        audioFilePath = "https://firebasestorage.googleapis.com/v0/b/mondu-farm.appspot.com/o/audio%2FVskWFDGRQT-2024-01-08%2001%3A10%3A37.100.mp3?alt=media&token=e0c16ba1-c67f-4658-acba-65e6457818a2";
+        audioFilePath = widget.data['pesan'];
       }
 
-      if (_media == Media.stream) {
-        await playerModule.startPlayerFromStream(
-          codec: Codec.pcm16, //_codec,
-          numChannels: 1,
-          sampleRate: tSTREAMSAMPLERATE, //tSAMPLERATE,
-        );
-        _addListeners();
-        setState(() {});
-        await feedHim(audioFilePath!);
-        //await finishPlayer();
-        await stopPlayer();
-        return;
-      } else {
-        if (audioFilePath != null) {
-          await playerModule.startPlayer(
-              fromURI: audioFilePath,
-              codec: codec,
-              sampleRate: tSTREAMSAMPLERATE,
-              whenFinished: () {
-                playerModule.logger.d('Play finished');
-                setState(() {});
+      if (audioFilePath != null) {
+        await playerModule.startPlayer(
+            fromURI: audioFilePath,
+            codec: codec,
+            sampleRate: tSTREAMSAMPLERATE,
+            whenFinished: () {
+              playerModule.logger.d('Play finished');
+
+              setState(() {
+                onPlayed = true;
               });
-        } else if (dataBuffer != null) {
-          if (codec == Codec.pcm16) {
-            dataBuffer = await flutterSoundHelper.pcmToWaveBuffer(
-              inputBuffer: dataBuffer,
-              numChannels: 1,
-              sampleRate: (_codec == Codec.pcm16 && _media == Media.asset) ? 48000 : tSAMPLERATE,
-            );
-            codec = Codec.pcm16WAV;
-          }
-          await playerModule.startPlayer(
-              fromDataBuffer: dataBuffer,
-              sampleRate: tSAMPLERATE,
-              codec: codec,
-              whenFinished: () {
-                playerModule.logger.d('Play finished');
-                setState(() {});
-              });
-        }
+            });
       }
       _addListeners();
       setState(() {
@@ -473,7 +342,9 @@ class _AudioChatWidgetState extends State<AudioChatWidget> {
     } on Exception catch (err) {
       playerModule.logger.d('error: $err');
     }
-    setState(() {});
+    setState(() {
+      onPlayed = true;
+    });
   }
 
   void pauseResumePlayer() async {
@@ -509,7 +380,7 @@ class _AudioChatWidgetState extends State<AudioChatWidget> {
     //playerModule.logger.d('-->seekToPlayer');
     try {
       if (playerModule.isPlaying) {
-        await playerModule.seekToPlayer(Duration(milliseconds: milliSecs));
+        await playerModule.seekToPlayer(Duration(milliseconds: milliSecs.toInt()));
       }
     } on Exception catch (err) {
       playerModule.logger.e('error: $err');
@@ -559,23 +430,6 @@ class _AudioChatWidgetState extends State<AudioChatWidget> {
     return (playerModule.isStopped) ? startPlayer : null;
   }
 
-  void startStopRecorder() {
-    if (recorderModule.isRecording || recorderModule.isPaused) {
-      stopRecorder();
-      onRecorded = false;
-    } else {
-      startRecorder();
-      onRecorded = true;
-    }
-  }
-
-  void Function()? onStartRecorderPressed() {
-    // Disable the button if the selected codec is not supported
-    if (!_encoderSupported!) return null;
-    if (_media == Media.stream && _codec != Codec.pcm16) return null;
-    return startStopRecorder;
-  }
-
   Future<void> setCodec(Codec codec) async {
     _encoderSupported = await recorderModule.isEncoderSupported(codec);
     _decoderSupported = await playerModule.isDecoderSupported(codec);
@@ -589,6 +443,13 @@ class _AudioChatWidgetState extends State<AudioChatWidget> {
   Widget build(BuildContext context) {
     return Card(
       color: Warna.ungu,
+      shape: RoundedRectangleBorder(
+        borderRadius: widget.data['pesan_dari'] == "admin"
+            ? BorderRadius.only(
+                bottomLeft: Radius.circular(20), bottomRight: Radius.circular(20), topLeft: Radius.circular(20))
+            : BorderRadius.only(
+                bottomLeft: Radius.circular(20), bottomRight: Radius.circular(20), topRight: Radius.circular(20)),
+      ),
       child: Padding(
         padding: EdgeInsets.all(7.0),
         child: Column(
@@ -601,7 +462,6 @@ class _AudioChatWidgetState extends State<AudioChatWidget> {
                   icon: Icon(onPlayed ? Icons.play_arrow : Icons.pause),
                 ),
                 Container(
-                  height: 20.0,
                   child: Row(
                     children: [
                       Slider(
@@ -613,7 +473,12 @@ class _AudioChatWidgetState extends State<AudioChatWidget> {
                         },
                         divisions: maxDuration == 0.0 ? 1 : maxDuration.toInt(),
                       ),
-                      Text("$_playerTxt"),
+                      Column(
+                        children: [
+                          Text("$_playerTxt"),
+                          Text("${widget.data['durasi'].toString()}"),
+                        ],
+                      ),
                     ],
                   ),
                 ),

@@ -15,10 +15,10 @@ import 'package:flutter_side_menu/flutter_side_menu.dart';
 class MainPage extends StatefulWidget {
   const MainPage({
     super.key,
-    this.uid = "",
-    this.route = "chat",
+    this.idUser = "",
+    this.route = "dashboard",
   });
-  final String uid;
+  final String idUser;
   final String route;
 
   @override
@@ -94,7 +94,7 @@ class _MainPageState extends State<MainPage> {
         return DashboardPage();
       case "chat":
         return ChatPage(
-          uid: widget.uid,
+          idUser: widget.idUser,
         );
       case "user":
         return UserTable();
@@ -156,7 +156,10 @@ class _MainPageState extends State<MainPage> {
                         height: 50,
                         alignment: Alignment.center,
                         decoration: BoxDecoration(color: Warna.ungu, borderRadius: BorderRadius.circular(50)),
-                        child: Text("${data['nama'][0]}"),
+                        child: Text(
+                          "${data['nama'][0]}",
+                          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 16),
+                        ),
                       ),
                       SizedBox(
                         height: 10,
@@ -203,7 +206,7 @@ class _MainPageState extends State<MainPage> {
               padding: EdgeInsetsDirectional.symmetric(vertical: 10, horizontal: 5),
             ),
             SideMenuItemDataTile(
-              isSelected: ["dashboard","chat"].contains(widget.route),
+              isSelected: ["dashboard", "chat"].contains(widget.route),
               onTap: () {
                 Navigator.of(context).pushReplacement(
                   MaterialPageRoute(

@@ -117,8 +117,8 @@ class _UserTableState extends State<UserTable> {
                                       1;
                                   return DataRow(cells: [
                                     DataCell(Text(numberedTable.toString())),
-                                    DataCell(Text(val.value['name'])),
-                                    DataCell(Text(val.value['phone_number']!.toString())),
+                                    DataCell(Text(val.value['nama'])),
+                                    DataCell(Text(val.value['no_telpon']!.toString())),
                                     DataCell(Row(
                                       children: [
                                         Tooltip(
@@ -367,8 +367,8 @@ class _EditUserFormState extends State<EditUserForm> {
   void initState() {
     super.initState();
     cekUser();
-    namaController.text = widget.data['name'];
-    noTelponController.text = widget.data['phone_number'].toString();
+    namaController.text = widget.data['nama'];
+    noTelponController.text = widget.data['no_telpon'].toString();
   }
 
   @override
@@ -480,8 +480,8 @@ class _EditUserFormState extends State<EditUserForm> {
                                 });
                                 EasyLoading.show(status: "Loading...");
                                 FirebaseDatabase.instance.ref().child("users").child(widget.id).update({
-                                  "name": namaController.text,
-                                  "phone_number": noTelponController.text,
+                                  "nama": namaController.text,
+                                  "no_telpon": noTelponController.text,
                                 }).whenComplete(() {
                                   EasyLoading.showSuccess("Data User Telah di Ubah.",
                                       dismissOnTap: true, duration: Duration(seconds: 3));

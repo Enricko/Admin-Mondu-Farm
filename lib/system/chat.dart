@@ -24,8 +24,8 @@ class Chat {
     }
   }
 
-  static InsertChat(String filePath) async {
-    final id_user = "-NnJThg-A5k5iNE8Z1VT";
+
+  static InsertChat(String filePath, String recorderTxt,String idUser) async {
     // -NnJThg-A5k5iNE8Z1VT
     var metadata = SettableMetadata(
       contentType: "audio/mpeg",
@@ -38,10 +38,18 @@ class Chat {
         String linkPath = await fileStorage.getDownloadURL();
         Map<String, dynamic> data = {
           "pesan": linkPath,
+          "pesan_dari": "admin",
+          "durasi": recorderTxt,
           "type": "voice",
           "tanggal": DateTime.now().toString(),
         };
-        await FirebaseDatabase.instance.ref().child("pesan").child(id_user).push().set(data).whenComplete(() {
+        await FirebaseDatabase.instance
+            .ref()
+            .child("pesan")
+            .child(idUser)
+            .push()
+            .set(data)
+            .whenComplete(() {
           EasyLoading.showSuccess('Sapi telah di tambahkan', dismissOnTap: true, duration: Duration(seconds: 3));
         });
       });
@@ -50,13 +58,22 @@ class Chat {
         String linkPath = await fileStorage.getDownloadURL();
         Map<String, dynamic> data = {
           "pesan": linkPath,
+          "pesan_dari": "admin",
+          "durasi": recorderTxt,
           "type": "voice",
           "tanggal": DateTime.now().toString(),
         };
-        await FirebaseDatabase.instance.ref().child("pesan").child(id_user).push().set(data).whenComplete(() {
+        await FirebaseDatabase.instance
+            .ref()
+            .child("pesan")
+            .child(idUser)
+            .push()
+            .set(data)
+            .whenComplete(() {
           EasyLoading.showSuccess('Sapi telah di tambahkan', dismissOnTap: true, duration: Duration(seconds: 3));
         });
       });
     }
   }
+  
 }

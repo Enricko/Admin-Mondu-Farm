@@ -21,7 +21,8 @@ import 'package:intl/intl.dart' show DateFormat;
 import 'package:flutter/foundation.dart' show kIsWeb;
 
 class RecordChatWidget extends StatefulWidget {
-  const RecordChatWidget({super.key});
+  const RecordChatWidget({super.key, required this.idUser});
+  final String idUser;
 
   @override
   State<RecordChatWidget> createState() => _RecordChatWidgetState();
@@ -156,7 +157,7 @@ class _RecordChatWidgetState extends State<RecordChatWidget> {
   double sliderCurrentPosition = 0.0;
   double maxDuration = 1.0;
   Media? _media = Media.file;
-  Codec _codec = Codec.aacMP4;
+  Codec _codec = Codec.mp3;
 
   bool? _encoderSupported = true; // Optimist
   bool _decoderSupported = true; // Optimist
@@ -321,6 +322,7 @@ class _RecordChatWidgetState extends State<RecordChatWidget> {
           bitRate: 8000,
           numChannels: 1,
           sampleRate: (_codec == Codec.pcm16) ? tSTREAMSAMPLERATE : tSAMPLERATE,
+          
         );
       }
 
@@ -652,16 +654,17 @@ class _RecordChatWidgetState extends State<RecordChatWidget> {
   }
 
   void submitVoiceNote() async {
-    recorderModule.getRecordURL(path: _path[_codec.index]!).then((value) async {
-      await Chat.InsertChat(value!);
+    await recorderModule.getRecordURL(path: _path[_codec.index]!).then((value) async {
+      await Chat.InsertChat(value!, _recorderTxt,widget.idUser);
+    }).whenComplete(() {
+      recorderModule.stopRecorder();
+      playerModule.closePlayer();
+      _recorderTxt = "00:00:00";
+      _playerTxt = "00:00:00";
+      sliderCurrentPosition = 0;
+      maxDuration = 1;
+      setState(() {});
     });
-    recorderModule.stopRecorder();
-    playerModule.closePlayer();
-    _recorderTxt = "00:00:00";
-    _playerTxt = "00:00:00";
-    sliderCurrentPosition = 0;
-    maxDuration = 1;
-    setState(() {});
   }
 
   @override
