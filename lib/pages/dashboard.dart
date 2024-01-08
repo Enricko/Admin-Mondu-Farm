@@ -66,19 +66,18 @@ class _DashboardPageState extends State<DashboardPage> {
             child: StreamBuilder(
               stream: FirebaseDatabase.instance.ref().child("pesan").onValue,
               builder: (context, snapshot) {
-                // if (snapshot.hasData && (snapshot.data!).snapshot.value != null) {
-                if (snapshot.hasData) {
+                if (snapshot.hasData && (snapshot.data!).snapshot.value != null) {
                   // Variable data mempermudah memanggil data pada database
-                  // Map<dynamic, dynamic> data = Map<dynamic, dynamic>.from(
-                  //     (snapshot.data! as DatabaseEvent).snapshot.value as Map<dynamic, dynamic>);
+                  Map<dynamic, dynamic> data = Map<dynamic, dynamic>.from(
+                      (snapshot.data! as DatabaseEvent).snapshot.value as Map<dynamic, dynamic>);
 
                   return ListView.builder(
-                    itemCount: 1,
+                    itemCount: data.length,
                     itemBuilder: (context, index) {
                       Future<Map<dynamic, dynamic>> dataUser = FirebaseDatabase.instance
                           .ref()
                           .child("users")
-                          .child("-NnJThg-A5k5iNE8Z1VT")
+                          .child("${data.keys.toList()[index]}")
                           .get()
                           .then((value) => value.value as Map<dynamic, dynamic>);
                       return FutureBuilder(
@@ -135,7 +134,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                           Navigator.of(context).pushReplacement(
                                             MaterialPageRoute(
                                               builder: (context) => MainPage(
-                                                idUser: "-NnJThg-A5k5iNE8Z1VT",
+                                                idUser: "${data.keys.toList()[index]}",
                                                 route: "chat",
                                               ),
                                             ),

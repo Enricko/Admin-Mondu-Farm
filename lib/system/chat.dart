@@ -50,7 +50,7 @@ class Chat {
             .push()
             .set(data)
             .whenComplete(() {
-          EasyLoading.showSuccess('Sapi telah di tambahkan', dismissOnTap: true, duration: Duration(seconds: 3));
+          EasyLoading.showSuccess('Pesan telah di tambahkan', dismissOnTap: true, duration: Duration(seconds: 3));
         });
       });
     } else {
@@ -70,7 +70,7 @@ class Chat {
             .push()
             .set(data)
             .whenComplete(() {
-          EasyLoading.showSuccess('Sapi telah di tambahkan', dismissOnTap: true, duration: Duration(seconds: 3));
+          EasyLoading.showSuccess('Pesan telah di tambahkan', dismissOnTap: true, duration: Duration(seconds: 3));
         });
       });
     }
