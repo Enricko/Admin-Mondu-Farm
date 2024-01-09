@@ -112,36 +112,36 @@ class _ChatPageState extends State<ChatPage> {
                         Map<dynamic, dynamic> data = Map<dynamic, dynamic>.from(
                             (snapshot.data! as DatabaseEvent).snapshot.value as Map<dynamic, dynamic>);
 
-                        // List<Map<dynamic, dynamic>> dataList = [];
-                        // data.forEach((key, value) {
-                        //   // Setiap data yang di perulangkan bakal di simpan ke dalam list
-                        //   final currentData = Map<String, dynamic>.from(value);
-                        //   // Mensetting variable dengan total lembur dan gaji)
-                        //   dataList.add({
-                        //     'uid': key,
-                        //     'durasi': currentData['durasi'],
-                        //     'pesan': currentData['pesan'],
-                        //     'pesan_dari': currentData['pesan_dari'],
-                        //     'tanggal': currentData['tanggal'],
-                        //     'type': currentData['type'],
-                        //   });
-                        // });
-                        // dataList.sort((a, b) {
-                        //   var aDate = DateTime.parse(a["tanggal"]);
-                        //   var bDate = DateTime.parse(b["tanggal"]);
-                        //   return aDate.compareTo(bDate);
-                        // });
+                        List<Map<dynamic, dynamic>> dataList = [];
+                        data.forEach((key, value) {
+                          // Setiap data yang di perulangkan bakal di simpan ke dalam list
+                          final currentData = Map<String, dynamic>.from(value);
+                          // Mensetting variable dengan total lembur dan gaji)
+                          dataList.add({
+                            'uid': key,
+                            'durasi': currentData['durasi'],
+                            'pesan': currentData['pesan'],
+                            'pesan_dari': currentData['pesan_dari'],
+                            'tanggal': currentData['tanggal'],
+                            'type': currentData['type'],
+                          });
+                        });
+                        dataList.sort((a, b) {
+                          var aDate = DateTime.parse(a["tanggal"]);
+                          var bDate = DateTime.parse(b["tanggal"]);
+                          return aDate.compareTo(bDate);
+                        });
                         return SingleChildScrollView(
                           reverse: true,
                           child: Column(
-                              children: data.entries.map((e) {
+                              children: dataList.map((e) {
                             return Container(
                               margin: const EdgeInsets.symmetric(horizontal: 15),
                               child: Row(
                                 mainAxisAlignment:
-                                    e.value['pesan_dari'] == "admin" ? MainAxisAlignment.end : MainAxisAlignment.start,
+                                    e['pesan_dari'] == "admin" ? MainAxisAlignment.end : MainAxisAlignment.start,
                                 children: <Widget>[
-                                  AudioChatWidget(data: e.value, maxDurasi: durationStringToDouble(e.value['durasi']))
+                                  AudioChatWidget(data: e)
                                 ],
                               ),
                             );
@@ -160,7 +160,9 @@ class _ChatPageState extends State<ChatPage> {
                   ),
                 ),
               ),
-              RecordChatWidget(idUser: widget.idUser,),
+              RecordChatWidget(
+                idUser: widget.idUser,
+              ),
             ],
           );
         }
@@ -186,4 +188,5 @@ class _ChatPageState extends State<ChatPage> {
     durationDouble = (minutes * 60 * 1000) + (seconds * 1000) + milliseconds as double;
     return durationDouble;
   }
+
 }

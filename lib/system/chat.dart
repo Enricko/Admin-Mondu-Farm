@@ -1,12 +1,12 @@
 import 'dart:io';
 
-import 'package:admin_mondu_farm/utils/custom_extension.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import "package:http/http.dart" as http;
+import 'package:admin_mondu_farm/utils/custom_extension.dart';
 
 class Chat {
   static Future<Uint8List> convertBlobUrlToUint8List(String blobUrl) async {
@@ -24,11 +24,10 @@ class Chat {
     }
   }
 
-
-  static InsertChat(String filePath, String recorderTxt,String idUser) async {
+  static Future<void> InsertChat(String filePath, int durasi, String idUser) async {
     // -NnJThg-A5k5iNE8Z1VT
     var metadata = SettableMetadata(
-      contentType: "audio/mpeg",
+      contentType: "video/mpeg",
     );
     String fileName = "${generateRandomString(10)}-${DateTime.now()}.mp3";
     var fileStorage = FirebaseStorage.instance.ref().child("audio").child(fileName);
@@ -39,17 +38,11 @@ class Chat {
         Map<String, dynamic> data = {
           "pesan": linkPath,
           "pesan_dari": "admin",
-          "durasi": recorderTxt,
+          "durasi": durasi,
           "type": "voice",
           "tanggal": DateTime.now().toString(),
         };
-        await FirebaseDatabase.instance
-            .ref()
-            .child("pesan")
-            .child(idUser)
-            .push()
-            .set(data)
-            .whenComplete(() {
+        await FirebaseDatabase.instance.ref().child("pesan").child(idUser).push().set(data).whenComplete(() {
           EasyLoading.showSuccess('Pesan telah di tambahkan', dismissOnTap: true, duration: Duration(seconds: 3));
         });
       });
@@ -59,21 +52,14 @@ class Chat {
         Map<String, dynamic> data = {
           "pesan": linkPath,
           "pesan_dari": "admin",
-          "durasi": recorderTxt,
+          "durasi": durasi,
           "type": "voice",
           "tanggal": DateTime.now().toString(),
         };
-        await FirebaseDatabase.instance
-            .ref()
-            .child("pesan")
-            .child(idUser)
-            .push()
-            .set(data)
-            .whenComplete(() {
+        await FirebaseDatabase.instance.ref().child("pesan").child(idUser).push().set(data).whenComplete(() {
           EasyLoading.showSuccess('Pesan telah di tambahkan', dismissOnTap: true, duration: Duration(seconds: 3));
         });
       });
     }
   }
-  
 }

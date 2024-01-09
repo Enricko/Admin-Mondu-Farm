@@ -4,7 +4,6 @@ import 'dart:math';
 
 import 'package:admin_mondu_farm/system/chat.dart';
 import 'package:admin_mondu_farm/utils/color.dart';
-import 'package:admin_mondu_farm/utils/custom_extension.dart';
 import 'package:audio_session/audio_session.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +18,7 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart' show DateFormat;
 import 'package:flutter/foundation.dart' show kIsWeb;
+// import 'package:path_provider/path_provider.dart';
 
 class RecordChatWidget extends StatefulWidget {
   const RecordChatWidget({super.key, required this.idUser});
@@ -77,6 +77,8 @@ enum AudioState {
 
 class _RecordChatWidgetState extends State<RecordChatWidget> {
   bool _isRecording = false;
+  bool readySubmit = false;
+
   final List<String?> _path = [
     null,
     null,
@@ -150,14 +152,14 @@ class _RecordChatWidgetState extends State<RecordChatWidget> {
   FlutterSoundPlayer playerModule = FlutterSoundPlayer();
   FlutterSoundRecorder recorderModule = FlutterSoundRecorder();
 
-  String _recorderTxt = '00:00:00';
-  String _playerTxt = '00:00:00';
+  Duration _recorderDuration = Duration();
+  Duration _playerDuration = Duration();
   double? _dbLevel;
 
   double sliderCurrentPosition = 0.0;
   double maxDuration = 1.0;
   Media? _media = Media.file;
-  Codec _codec = Codec.mp3;
+  Codec _codec = Codec.aacMP4;
 
   bool? _encoderSupported = true; // Optimist
   bool _decoderSupported = true; // Optimist
@@ -194,9 +196,9 @@ class _RecordChatWidgetState extends State<RecordChatWidget> {
     await openTheRecorder();
     await _initializeExample();
 
-    if ((!kIsWeb) && Platform.isAndroid) {
-      await copyAssets();
-    }
+    // if ((!kIsWeb) && Platform.isAndroid) {
+    //   await copyAssets();
+    // }
 
     final session = await AudioSession.instance;
     await session.configure(AudioSessionConfiguration(
@@ -216,14 +218,14 @@ class _RecordChatWidgetState extends State<RecordChatWidget> {
     ));
   }
 
-  Future<void> copyAssets() async {
-    var dataBuffer = (await rootBundle.load('assets/canardo.png')).buffer.asUint8List();
-    var path = '${await playerModule.getResourcePath()}/assets';
-    if (!await Directory(path).exists()) {
-      await Directory(path).create(recursive: true);
-    }
-    await File('$path/canardo.png').writeAsBytes(dataBuffer);
-  }
+  // Future<void> copyAssets() async {
+  //   var dataBuffer = (await rootBundle.load('assets/canardo.png')).buffer.asUint8List();
+  //   var path = '${await playerModule.getResourcePath()}/assets';
+  //   if (!await Directory(path).exists()) {
+  //     await Directory(path).create(recursive: true);
+  //   }
+  //   await File('$path/canardo.png').writeAsBytes(dataBuffer);
+  // }
 
   @override
   void initState() {
@@ -288,6 +290,7 @@ class _RecordChatWidgetState extends State<RecordChatWidget> {
       if (!kIsWeb) {
         // var tempDir = await getTemporaryDirectory();
         // path = '${tempDir.path}/flutter_sound${ext[_codec.index]}';
+        // print("Path : ${path}");
       } else {
         path = '_flutter_sound${ext[_codec.index]}';
       }
@@ -322,24 +325,21 @@ class _RecordChatWidgetState extends State<RecordChatWidget> {
           bitRate: 8000,
           numChannels: 1,
           sampleRate: (_codec == Codec.pcm16) ? tSTREAMSAMPLERATE : tSAMPLERATE,
-          
         );
       }
 
       recorderModule.logger.d('startRecorder');
 
       _recorderSubscription = recorderModule.onProgress!.listen((e) {
-        var date = DateTime.fromMillisecondsSinceEpoch(e.duration.inMilliseconds, isUtc: true);
-        var txt = DateFormat('mm:ss:SS', 'en_GB').format(date);
-
         setState(() {
-          _recorderTxt = txt.substring(0, 8);
+          _recorderDuration = e.duration;
           _dbLevel = e.decibels;
         });
       });
 
       setState(() {
         _isRecording = true;
+        readySubmit = false;
         _path[_codec.index] = path;
       });
     } on Exception catch (err) {
@@ -347,6 +347,7 @@ class _RecordChatWidgetState extends State<RecordChatWidget> {
       setState(() {
         stopRecorder();
         _isRecording = false;
+        readySubmit = false;
         cancelRecordingDataSubscription();
         cancelRecorderSubscriptions();
       });
@@ -362,10 +363,10 @@ class _RecordChatWidgetState extends State<RecordChatWidget> {
     } on Exception catch (err) {
       recorderModule.logger.d('stopRecorder error: $err');
     }
-    print("_Path : $_path");
 
     setState(() {
       _isRecording = false;
+      readySubmit = true;
     });
   }
 
@@ -399,10 +400,8 @@ class _RecordChatWidgetState extends State<RecordChatWidget> {
         sliderCurrentPosition = 0.0;
       }
 
-      var date = DateTime.fromMillisecondsSinceEpoch(e.position.inMilliseconds, isUtc: true);
-      var txt = DateFormat('mm:ss:SS', 'en_GB').format(date);
       setState(() {
-        _playerTxt = txt.substring(0, 8);
+        _playerDuration = e.position;
       });
     });
   }
@@ -489,7 +488,9 @@ class _RecordChatWidgetState extends State<RecordChatWidget> {
               sampleRate: tSTREAMSAMPLERATE,
               whenFinished: () {
                 playerModule.logger.d('Play finished');
-                setState(() {});
+                setState(() {
+                  onPlayed = true;
+                });
               });
         } else if (dataBuffer != null) {
           if (codec == Codec.pcm16) {
@@ -532,7 +533,9 @@ class _RecordChatWidgetState extends State<RecordChatWidget> {
     } on Exception catch (err) {
       playerModule.logger.d('error: $err');
     }
-    setState(() {});
+    setState(() {
+      onPlayed = true;
+    });
   }
 
   void pauseResumePlayer() async {
@@ -622,6 +625,7 @@ class _RecordChatWidgetState extends State<RecordChatWidget> {
     if (recorderModule.isRecording || recorderModule.isPaused) {
       stopRecorder();
       onRecorded = false;
+      readySubmit = true;
     } else {
       startRecorder();
       onRecorded = true;
@@ -655,37 +659,47 @@ class _RecordChatWidgetState extends State<RecordChatWidget> {
 
   void submitVoiceNote() async {
     await recorderModule.getRecordURL(path: _path[_codec.index]!).then((value) async {
-      await Chat.InsertChat(value!, _recorderTxt,widget.idUser);
-    }).whenComplete(() {
-      recorderModule.stopRecorder();
-      playerModule.closePlayer();
-      _recorderTxt = "00:00:00";
-      _playerTxt = "00:00:00";
-      sliderCurrentPosition = 0;
-      maxDuration = 1;
-      setState(() {});
+      await Chat.InsertChat(value!, _recorderDuration.inMilliseconds, widget.idUser).whenComplete(() {
+        recorderModule.stopRecorder();
+        playerModule.closePlayer();
+        _playerDuration = Duration.zero;
+        _recorderDuration = Duration.zero;
+        sliderCurrentPosition = 0;
+        maxDuration = 1;
+        readySubmit = false;
+        setState(() {});
+      });
     });
+  }
+
+  String _formatDuration(Duration duration) {
+    String twoDigits(int n) => n.toString().padLeft(2, '0');
+    String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
+    String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
+    return "${duration.inHours > 0 ? duration.inHours.toString() + ":" : ""}$twoDigitMinutes:$twoDigitSeconds";
   }
 
   @override
   Widget build(BuildContext context) {
+    var width = MediaQuery.of(context).size.width;
     return Container(
       alignment: Alignment.center,
       height: 50,
-      width: 450,
+      width: width,
       decoration: BoxDecoration(color: Warna.ungu, borderRadius: BorderRadius.circular(10)),
-      margin: EdgeInsets.symmetric(vertical: 5),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          // Text(_mRecorder!.isRecording ? 'Recording in progress' : 'Recorder is stopped'),
-          IconButton(
-            onPressed: onStartPlayerPressed() ?? onPauseResumePlayerPressed(),
-            icon: Icon(onPlayed ? Icons.play_arrow : Icons.pause),
-          ),
-          Container(
-            child: Row(
+      margin: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+      child: FittedBox(
+        fit: BoxFit.scaleDown,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            // Text(_mRecorder!.isRecording ? 'Recording in progress' : 'Recorder is stopped'),
+            IconButton(
+              onPressed: onStartPlayerPressed() ?? onPauseResumePlayerPressed(),
+              icon: Icon(onPlayed ? Icons.play_arrow : Icons.pause),
+            ),
+            Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -702,50 +716,50 @@ class _RecordChatWidgetState extends State<RecordChatWidget> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text("$_playerTxt"),
+                    Text("${_formatDuration(_playerDuration)}"),
                     Divider(color: Colors.black.withOpacity(0.3), height: 1),
-                    Text("$_recorderTxt"),
+                    Text("${_formatDuration(_recorderDuration)}"),
                   ],
                 ),
               ],
             ),
-          ),
-          SizedBox(
-            width: 5,
-          ),
-          IconButton(
-            onPressed: onStartRecorderPressed(),
-            icon: Container(
-              alignment: Alignment.center,
-              padding: EdgeInsets.all(5),
-              decoration: BoxDecoration(
-                color: Warna.biruUngu,
-                borderRadius: BorderRadius.circular(50),
-              ),
-              child: Icon(!onRecorded ? Icons.mic : Icons.mic_off),
+            SizedBox(
+              width: 5,
             ),
-          ),
-          SizedBox(
-            width: 10,
-          ),
-          IconButton(
-            onPressed: onStartPlayerPressed() == null
-                ? null
-                : () {
-                    submitVoiceNote();
-                  },
-            disabledColor: Colors.black.withOpacity(0.5),
-            icon: Container(
-              alignment: Alignment.center,
-              padding: EdgeInsets.all(5),
-              decoration: BoxDecoration(
-                color: onStartPlayerPressed() == null ? Warna.biruUngu.withOpacity(0.5) : Warna.biruUngu,
-                borderRadius: BorderRadius.circular(50),
+            IconButton(
+              onPressed: onStartRecorderPressed(),
+              icon: Container(
+                alignment: Alignment.center,
+                padding: EdgeInsets.all(5),
+                decoration: BoxDecoration(
+                  color: Warna.biruUngu,
+                  borderRadius: BorderRadius.circular(50),
+                ),
+                child: Icon(!onRecorded ? Icons.mic : Icons.mic_off),
               ),
-              child: Icon(Icons.send),
             ),
-          ),
-        ],
+            SizedBox(
+              width: 10,
+            ),
+            IconButton(
+              onPressed: !readySubmit
+                  ? null
+                  : () {
+                      submitVoiceNote();
+                    },
+              disabledColor: Colors.black.withOpacity(0.5),
+              icon: Container(
+                alignment: Alignment.center,
+                padding: EdgeInsets.all(5),
+                decoration: BoxDecoration(
+                  color: !readySubmit ? Warna.biruUngu.withOpacity(0.5) : Warna.biruUngu,
+                  borderRadius: BorderRadius.circular(50),
+                ),
+                child: Icon(Icons.send),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
