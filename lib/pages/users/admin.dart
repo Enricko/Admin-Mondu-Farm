@@ -129,7 +129,7 @@ class _AdminTableState extends State<AdminTable> {
                                     DataCell(Text(numberedTable.toString())),
                                     DataCell(Text(val.value['nama'])),
                                     DataCell(Text(val.value['email']!)),
-                                    DataCell(Text(val.value['no_telpon']!.toString())),
+                                    DataCell(Text(val.value['no_telepon']!.toString())),
                                     DataCell(Row(
                                       children: [
                                         Tooltip(
@@ -596,7 +596,7 @@ class _EditUserFormState extends State<EditUserForm> {
     super.initState();
     cekUser();
     namaController.text = widget.data['nama'];
-    noTelponController.text = widget.data['no_telpon'].toString();
+    noTelponController.text = widget.data['no_telepon'].toString();
   }
 
   @override
@@ -710,7 +710,7 @@ class _EditUserFormState extends State<EditUserForm> {
                                 print(noTelponController.text);
                                 FirebaseDatabase.instance.ref().child("users").child(widget.id).update({
                                   "nama": namaController.text,
-                                  "no_telpon": noTelponController.text,
+                                  "no_telepon": noTelponController.text,
                                 }).whenComplete(() {
                                   EasyLoading.showSuccess("Data User Telah di Ubah.",
                                       dismissOnTap: true, duration: Duration(seconds: 3));
