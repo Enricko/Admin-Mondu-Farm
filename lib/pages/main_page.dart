@@ -1,4 +1,5 @@
-import 'package:admin_mondu_farm/pages/chat.dart';
+import 'package:admin_mondu_farm/pages/chat/chat.dart';
+import 'package:admin_mondu_farm/pages/chat/chat_list.dart';
 import 'package:admin_mondu_farm/pages/dashboard.dart';
 import 'package:admin_mondu_farm/pages/login.dart';
 import 'package:admin_mondu_farm/pages/ternak/ternak.dart';
@@ -16,10 +17,14 @@ class MainPage extends StatefulWidget {
   const MainPage({
     super.key,
     this.idUser = "",
+    this.idTernak = "",
+    this.kategori = "",
     this.route = "dashboard",
   });
   final String idUser;
   final String route;
+  final String idTernak;
+  final String kategori;
 
   @override
   State<MainPage> createState() => _MainPageState();
@@ -92,9 +97,13 @@ class _MainPageState extends State<MainPage> {
     switch (widget.route) {
       case "dashboard":
         return DashboardPage();
+      case "chat_list":
+        return ChatList(
+          idUser: widget.idUser
+        );
       case "chat":
         return ChatPage(
-          idUser: widget.idUser,
+          idUser: widget.idUser, idTernak: widget.idTernak, kategori: widget.kategori,
         );
       case "user":
         return UserTable();

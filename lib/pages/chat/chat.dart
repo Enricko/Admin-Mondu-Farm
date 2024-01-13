@@ -16,8 +16,10 @@ import 'package:intl/intl.dart';
 typedef _Fn = void Function();
 
 class ChatPage extends StatefulWidget {
-  const ChatPage({super.key, required this.idUser});
+  const ChatPage({super.key, required this.idUser, required this.idTernak, required this.kategori});
   final String idUser;
+  final String idTernak;
+  final String kategori;
 
   @override
   State<ChatPage> createState() => _ChatPageState();
@@ -60,7 +62,8 @@ class _ChatPageState extends State<ChatPage> {
                           Navigator.of(context).pushReplacement(
                             MaterialPageRoute(
                               builder: ((context) => MainPage(
-                                    route: "dashboard",
+                                    route: "chat_list",
+                                    idUser: widget.idUser,
                                   )),
                             ),
                           );
@@ -140,9 +143,7 @@ class _ChatPageState extends State<ChatPage> {
                               child: Row(
                                 mainAxisAlignment:
                                     e['pesan_dari'] == "admin" ? MainAxisAlignment.end : MainAxisAlignment.start,
-                                children: <Widget>[
-                                  AudioChatWidget(data: e)
-                                ],
+                                children: <Widget>[AudioChatWidget(data: e)],
                               ),
                             );
                           }).toList()),
@@ -162,6 +163,8 @@ class _ChatPageState extends State<ChatPage> {
               ),
               RecordChatWidget(
                 idUser: widget.idUser,
+                idTernak: widget.idTernak,
+                kategori: widget.kategori,
               ),
             ],
           );
@@ -188,5 +191,4 @@ class _ChatPageState extends State<ChatPage> {
     durationDouble = (minutes * 60 * 1000) + (seconds * 1000) + milliseconds as double;
     return durationDouble;
   }
-
 }

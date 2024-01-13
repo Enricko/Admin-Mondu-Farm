@@ -21,8 +21,10 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 // import 'package:path_provider/path_provider.dart';
 
 class RecordChatWidget extends StatefulWidget {
-  const RecordChatWidget({super.key, required this.idUser});
+  const RecordChatWidget({super.key, required this.idUser, required this.idTernak, required this.kategori});
   final String idUser;
+  final String idTernak;
+  final String kategori;
 
   @override
   State<RecordChatWidget> createState() => _RecordChatWidgetState();
@@ -659,7 +661,7 @@ class _RecordChatWidgetState extends State<RecordChatWidget> {
 
   void submitVoiceNote() async {
     await recorderModule.getRecordURL(path: _path[_codec.index]!).then((value) async {
-      await Chat.InsertChat(value!, _recorderDuration.inMilliseconds, widget.idUser).whenComplete(() {
+      await Chat.InsertChat(value!, _recorderDuration.inMilliseconds, widget.idUser,widget.idTernak,widget.kategori).whenComplete(() {
         recorderModule.stopRecorder();
         playerModule.closePlayer();
         _playerDuration = Duration.zero;

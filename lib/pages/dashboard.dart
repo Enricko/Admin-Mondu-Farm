@@ -12,6 +12,12 @@ class DashboardPage extends StatefulWidget {
 
 class _DashboardPageState extends State<DashboardPage> {
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -74,12 +80,14 @@ class _DashboardPageState extends State<DashboardPage> {
                   return ListView.builder(
                     itemCount: data.length,
                     itemBuilder: (context, index) {
-                      Future<Map<dynamic, dynamic>> dataUser = FirebaseDatabase.instance
+                      Future<Map<dynamic, dynamic>>? dataUser = FirebaseDatabase.instance
                           .ref()
                           .child("users")
                           .child("${data.keys.toList()[index]}")
                           .get()
-                          .then((value) => value.value as Map<dynamic, dynamic>);
+                          .then((value) {
+                        return value.value as Map<dynamic, dynamic>;
+                      });
                       return FutureBuilder(
                         future: dataUser,
                         builder: (context, snapshot) {
@@ -135,7 +143,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                             MaterialPageRoute(
                                               builder: (context) => MainPage(
                                                 idUser: "${data.keys.toList()[index]}",
-                                                route: "chat",
+                                                route: "chat_list",
                                               ),
                                             ),
                                           );
