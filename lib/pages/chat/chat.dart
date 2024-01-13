@@ -108,7 +108,14 @@ class _ChatPageState extends State<ChatPage> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: StreamBuilder(
-                    stream: FirebaseDatabase.instance.ref().child("pesan").child("-NnJThg-A5k5iNE8Z1VT").onValue,
+                    stream: FirebaseDatabase.instance
+                        .ref()
+                        .child("pesan")
+                        .child(widget.idUser)
+                        .child(widget.idTernak)
+                        .child("data")
+                        .orderByChild("metrics/tanggal")
+                        .onValue,
                     builder: (context, snapshot) {
                       if (snapshot.hasData && (snapshot.data!).snapshot.value != null) {
                         // Variable data mempermudah memanggil data pada database

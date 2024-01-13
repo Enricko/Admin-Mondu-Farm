@@ -108,7 +108,7 @@ class _UserTableState extends State<UserTable> {
                                 columns: const [
                                   DataColumn(label: Text("No")),
                                   DataColumn(label: Text("Nama")),
-                                  DataColumn(label: Text("No Telphone")),
+                                  DataColumn(label: Text("No Telepon")),
                                   DataColumn(label: Text("Action")),
                                 ],
                                 rows: data.entries.skip((page - 1) * perpage).take(perpage).map((val) {

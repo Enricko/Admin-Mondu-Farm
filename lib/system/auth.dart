@@ -27,7 +27,7 @@ class Auth {
             pref.setString("nama", getUser['nama'].toString());
             pref.setString("email", getUser['email'].toString());
             pref.setString("level", getUser['level'].toString());
-            pref.setInt("no_telepon", int.parse(getUser['no_telepon']));
+            pref.setInt("no_telepon", int.parse(getUser['no_telepon'].toString()));
             EasyLoading.showSuccess('Welcome Back', dismissOnTap: true);
             Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => MainPage()));
             return;

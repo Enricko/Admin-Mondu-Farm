@@ -68,9 +68,9 @@ class _ChatListState extends State<ChatList> {
             builder: (context, snapshot) {
               if (snapshot.hasData && (snapshot.data!).snapshot.value != null) {
                 // Variable data mempermudah memanggil data pada database
-                Map<dynamic, dynamic> data =
-                    Map<dynamic, dynamic>.from((snapshot.data! as DatabaseEvent).snapshot.value as Map<dynamic, dynamic>);
-          
+                Map<dynamic, dynamic> data = Map<dynamic, dynamic>.from(
+                    (snapshot.data! as DatabaseEvent).snapshot.value as Map<dynamic, dynamic>);
+
                 List<Map<dynamic, dynamic>> dataList = [];
                 data.forEach((key, value) {
                   // Setiap data yang di perulangkan bakal di simpan ke dalam list
@@ -117,6 +117,7 @@ class _ChatListState extends State<ChatList> {
                                             idUser: widget.idUser,
                                             idTernak: dataList[index]['uid'],
                                             kategori: dataList[index]['kategori'],
+                                            route: "chat",
                                           ),
                                         ),
                                       );
@@ -124,22 +125,28 @@ class _ChatListState extends State<ChatList> {
                                     trailing: Icon(Icons.arrow_forward_ios),
                                     tileColor: Colors.black12,
                                     title: Text("Sapi"),
-                                    leading: FutureBuilder(
-                                      future: getImageFromStorage(data['gambar'], dataList[index]['kategori']),
-                                      builder: (context, snapshot) {
-                                        if (snapshot.hasData) {
-                                          return Image.network(
-                                            snapshot.data!,
-                                            width: 125,
+                                    leading: SizedBox(
+                                      width: 150,
+                                      height: 75,
+                                      child: FutureBuilder(
+                                        future: getImageFromStorage(data['gambar'], dataList[index]['kategori']),
+                                        builder: (context, snapshot) {
+                                          if (snapshot.hasData) {
+                                            return Image.network(
+                                              snapshot.data!,
+                                              width: 150,
+                                              height: 75,
+                                              fit: BoxFit.contain,
+                                            );
+                                          }
+                                          if (snapshot.hasError) {
+                                            return Text("Terjadi Kesalahan");
+                                          }
+                                          return Center(
+                                            child: CircularProgressIndicator(),
                                           );
-                                        }
-                                        if (snapshot.hasError) {
-                                          return Text("Terjadi Kesalahan");
-                                        }
-                                        return Center(
-                                          child: CircularProgressIndicator(),
-                                        );
-                                      },
+                                        },
+                                      ),
                                     ),
                                     subtitle: Column(
                                       children: [
