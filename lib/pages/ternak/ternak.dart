@@ -26,6 +26,9 @@ class TableTernak extends StatefulWidget {
 class _TableTernakState extends State<TableTernak> {
   DatabaseReference db = FirebaseDatabase.instance.ref().child('ternak');
 
+  Map<dynamic, dynamic> dataTernak = {};
+  List<dynamic> dataKey = [];
+
   int page = 1;
   int perpage = 10;
   NumberFormat currencyFormatter = NumberFormat.currency(
@@ -57,11 +60,30 @@ class _TableTernakState extends State<TableTernak> {
     }
   }
 
+  Future<void> getDataBooking() async {
+    dataTernak = {};
+    dataKey = [];
+    await FirebaseDatabase.instance.ref().child('booking').get().then((value) {
+      dataTernak = value.value as Map<dynamic, dynamic>;
+      dataTernak.entries.forEach((element) async {
+        if (DateTime.parse(element.value['tanggal_booking'].toString())
+            .add(Duration(days: 2))
+            .isBefore(DateTime.now())) {
+          await FirebaseDatabase.instance.ref().child("booking").child(element.key).remove();
+        } else {
+          dataKey.add(element.value['id_ternak']);
+        }
+      });
+      setState(() {});
+    });
+  }
+
   // Code yang bakal di jalankan pertama kali halaman ini dibuka
   @override
   void initState() {
     // Cek User apakah user sudah pernah login sebelumnya
     cekUser();
+    getDataBooking();
     super.initState();
   }
 
@@ -111,6 +133,10 @@ class _TableTernakState extends State<TableTernak> {
               // Variable data mempermudah memanggil data pada database
               Map<dynamic, dynamic> data =
                   Map<dynamic, dynamic>.from((snapshot.data! as DatabaseEvent).snapshot.value as Map<dynamic, dynamic>);
+
+              data.removeWhere((key, value) {
+                return dataKey.contains(key);
+              });
               return Expanded(
                 child: Column(
                   children: [

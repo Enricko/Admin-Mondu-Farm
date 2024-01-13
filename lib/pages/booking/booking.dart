@@ -27,6 +27,27 @@ class _BookingTableState extends State<BookingTable> {
     });
   }
 
+  Future<void> deleteBookingIf2Days() async {
+    await FirebaseDatabase.instance.ref().child('booking').get().then((value) {
+      Map<dynamic, dynamic> dataTernak = value.value as Map<dynamic, dynamic>;
+      dataTernak.entries.forEach((element) async {
+        if (DateTime.parse(element.value['tanggal_booking'].toString())
+            .add(Duration(days: 2))
+            .isBefore(DateTime.now())) {
+          await FirebaseDatabase.instance.ref().child("booking").child(element.key).remove();
+        }
+      });
+      setState(() {});
+    });
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    deleteBookingIf2Days();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -47,9 +68,10 @@ class _BookingTableState extends State<BookingTable> {
           builder: (context, snapshot) {
             if (snapshot.hasData && (snapshot.data!).snapshot.value != null) {
               // Variable data mempermudah memanggil data pada database
-              Map<dynamic, dynamic> data = Map<dynamic, dynamic>.from(
-                  (snapshot.data!).snapshot.value as Map<dynamic, dynamic>);
+              Map<dynamic, dynamic> data =
+                  Map<dynamic, dynamic>.from((snapshot.data!).snapshot.value as Map<dynamic, dynamic>);
               // data.removeWhere((key, value) => value['level'] == null || value['level'] == "user");
+              deleteBookingIf2Days();
               return Expanded(
                 child: Column(
                   children: [
@@ -61,12 +83,9 @@ class _BookingTableState extends State<BookingTable> {
                           scrollDirection: Axis.horizontal,
                           child: SingleChildScrollView(
                             child: DataTable(
-                                headingRowColor: MaterialStateProperty.all(
-                                    const Color(0xffd3d3d3)),
-                                dataRowColor: MaterialStateProperty.all(
-                                    const Color(0xffd3d3d3).withOpacity(0.7)),
-                                border: TableBorder.all(
-                                    width: 1, color: Colors.black),
+                                headingRowColor: MaterialStateProperty.all(const Color(0xffd3d3d3)),
+                                dataRowColor: MaterialStateProperty.all(const Color(0xffd3d3d3).withOpacity(0.7)),
+                                border: TableBorder.all(width: 1, color: Colors.black),
                                 columns: const [
                                   DataColumn(label: Text("No")),
                                   DataColumn(label: Text("Nama")),
@@ -76,27 +95,21 @@ class _BookingTableState extends State<BookingTable> {
                                   DataColumn(label: Text("Action")),
                                 ],
                                 rows: data.entries
+                                    .where((element) => element.value['status_booking'] == "Sedang Di Booking")
                                     .skip((page - 1) * perpage)
                                     .take(perpage)
                                     .map((val) {
-                                  var numberedTable = data.entries
-                                          .toList()
-                                          .indexWhere((element) =>
-                                              element.value == val.value &&
-                                              element.key == val.key) +
+                                  var numberedTable = data.entries.toList().indexWhere(
+                                          (element) => element.value == val.value && element.key == val.key) +
                                       1;
 
                                   return DataRow(cells: [
                                     DataCell(Text(numberedTable.toString())),
                                     // DataCell(Text(dataList)),
-                                    DataCell(
-                                        Text(val.value['nama']!.toString())),
-                                    DataCell(Text(
-                                        val.value['no_telepon']!.toString())),
-                                    DataCell(Text(
-                                        val.value['kategori']!.toString())),
-                                    DataCell(Text(val.value['tanggal_booking']!
-                                        .toString())),
+                                    DataCell(Text(val.value['nama']!.toString())),
+                                    DataCell(Text(val.value['no_telepon']!.toString())),
+                                    DataCell(Text(val.value['kategori']!.toString())),
+                                    DataCell(Text(val.value['tanggal_booking']!.toString())),
                                     DataCell(Row(
                                       children: [
                                         Tooltip(
@@ -106,35 +119,17 @@ class _BookingTableState extends State<BookingTable> {
                                                   showDialog(
                                                     context: context,
                                                     barrierDismissible: false,
-                                                    builder:
-                                                        (BuildContext context) {
+                                                    builder: (BuildContext context) {
                                                       return Dialog(
                                                         shape: const RoundedRectangleBorder(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .all(Radius
-                                                                        .circular(
-                                                                            5))),
+                                                            borderRadius: BorderRadius.all(Radius.circular(5))),
                                                         child: EditNota(
-                                                          id_ternak: val.value[
-                                                                  'id_ternak']!
-                                                              .toString(),
-                                                          id_user: val
-                                                              .value['id_user']!
-                                                              .toString(),
-                                                          kategori: val.value[
-                                                                  'kategori']!
-                                                              .toString(),
-                                                          nama: val
-                                                              .value['nama']!
-                                                              .toString(),
-                                                          noTelepon: val.value[
-                                                                  'no_telepon']!
-                                                              .toString(),
-                                                          tanggalBooking: val
-                                                              .value[
-                                                                  'tanggal_booking']!
-                                                              .toString(),
+                                                          id_ternak: val.value['id_ternak']!.toString(),
+                                                          id_user: val.value['id_user']!.toString(),
+                                                          kategori: val.value['kategori']!.toString(),
+                                                          nama: val.value['nama']!.toString(),
+                                                          noTelepon: val.value['no_telepon']!.toString(),
+                                                          tanggalBooking: val.value['tanggal_booking']!.toString(),
                                                         ),
                                                       );
                                                     },
@@ -178,8 +173,7 @@ class _BookingTableState extends State<BookingTable> {
                           fontWeight: FontWeight.w700,
                         ),
                         activeBtnStyle: ButtonStyle(
-                          backgroundColor:
-                              MaterialStateProperty.all(Warna.ungu),
+                          backgroundColor: MaterialStateProperty.all(Warna.ungu),
                           shape: MaterialStateProperty.all(
                             RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(38),
@@ -187,10 +181,8 @@ class _BookingTableState extends State<BookingTable> {
                           ),
                         ),
                         inactiveBtnStyle: ButtonStyle(
-                          backgroundColor:
-                              MaterialStateProperty.all(Warna.biruUngu),
-                          shape:
-                              MaterialStateProperty.all(RoundedRectangleBorder(
+                          backgroundColor: MaterialStateProperty.all(Warna.biruUngu),
+                          shape: MaterialStateProperty.all(RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(38),
                           )),
                         ),
@@ -217,12 +209,9 @@ class _BookingTableState extends State<BookingTable> {
                           scrollDirection: Axis.horizontal,
                           child: SingleChildScrollView(
                             child: DataTable(
-                              headingRowColor: MaterialStateProperty.all(
-                                  const Color(0xffd3d3d3)),
-                              dataRowColor: MaterialStateProperty.all(
-                                  const Color(0xffd3d3d3).withOpacity(0.7)),
-                              border: TableBorder.all(
-                                  width: 1, color: Colors.black),
+                              headingRowColor: MaterialStateProperty.all(const Color(0xffd3d3d3)),
+                              dataRowColor: MaterialStateProperty.all(const Color(0xffd3d3d3).withOpacity(0.7)),
+                              border: TableBorder.all(width: 1, color: Colors.black),
                               columns: const [
                                 DataColumn(label: Text("No")),
                                 DataColumn(label: Text("Nama")),
@@ -264,8 +253,7 @@ class _BookingTableState extends State<BookingTable> {
                           fontWeight: FontWeight.w700,
                         ),
                         activeBtnStyle: ButtonStyle(
-                          backgroundColor:
-                              MaterialStateProperty.all(Warna.ungu),
+                          backgroundColor: MaterialStateProperty.all(Warna.ungu),
                           shape: MaterialStateProperty.all(
                             RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(38),
@@ -273,10 +261,8 @@ class _BookingTableState extends State<BookingTable> {
                           ),
                         ),
                         inactiveBtnStyle: ButtonStyle(
-                          backgroundColor:
-                              MaterialStateProperty.all(Warna.biruUngu),
-                          shape:
-                              MaterialStateProperty.all(RoundedRectangleBorder(
+                          backgroundColor: MaterialStateProperty.all(Warna.biruUngu),
+                          shape: MaterialStateProperty.all(RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(38),
                           )),
                         ),
