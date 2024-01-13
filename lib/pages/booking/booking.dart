@@ -46,7 +46,6 @@ class _BookingTableState extends State<BookingTable> {
           stream: db.onValue,
           builder: (context, snapshot) {
             if (snapshot.hasData && (snapshot.data!).snapshot.value != null) {
-              // Variable data mempermudah memanggil data pada database
               Map<dynamic, dynamic> data = Map<dynamic, dynamic>.from(
                   (snapshot.data!).snapshot.value as Map<dynamic, dynamic>);
               // data.removeWhere((key, value) => value['level'] == null || value['level'] == "user");
@@ -76,6 +75,9 @@ class _BookingTableState extends State<BookingTable> {
                                   DataColumn(label: Text("Action")),
                                 ],
                                 rows: data.entries
+                                    .where((element) =>
+                                        element.value['status_booking'] ==
+                                        "Sedang Di Booking")
                                     .skip((page - 1) * perpage)
                                     .take(perpage)
                                     .map((val) {
@@ -85,6 +87,11 @@ class _BookingTableState extends State<BookingTable> {
                                               element.value == val.value &&
                                               element.key == val.key) +
                                       1;
+                                  // List<Map<dynamic, dynamic>> filteredList = val
+                                  //     .where((entry) => entry['id_user'] == id_user)
+                                  //     .toList();
+                                  // var id_booking = data.entries.
+                                  // print(val.key);
 
                                   return DataRow(cells: [
                                     DataCell(Text(numberedTable.toString())),
@@ -116,6 +123,7 @@ class _BookingTableState extends State<BookingTable> {
                                                                         .circular(
                                                                             5))),
                                                         child: EditNota(
+                                                          id_booking: val.key!,
                                                           id_ternak: val.value[
                                                                   'id_ternak']!
                                                               .toString(),
