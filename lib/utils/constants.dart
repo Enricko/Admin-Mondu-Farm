@@ -11,7 +11,7 @@ class Constants {
       GoogleFonts.inter(fontSize: 18, color: Colors.white, fontWeight: FontWeight.bold);
   static TextStyle labelstyle = TextStyle(
       color: Colors.black,
-      fontSize: 16,fontWeight: FontWeight.w600);
+      fontSize: 18,fontWeight: FontWeight.w600);
 
   static double getPointX(BuildContext context) {
     return 40;

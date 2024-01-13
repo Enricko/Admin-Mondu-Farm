@@ -1,3 +1,4 @@
+import 'package:admin_mondu_farm/pages/booking/booking.dart';
 import 'package:admin_mondu_farm/pages/chat/chat.dart';
 import 'package:admin_mondu_farm/pages/chat/chat_list.dart';
 import 'package:admin_mondu_farm/pages/dashboard.dart';
@@ -109,6 +110,8 @@ class _MainPageState extends State<MainPage> {
         return UserTable();
       case "admin":
         return AdminTable();
+      case "booking":
+        return BookingTable();
       case "sapi":
         return TableTernak(
           kategori: 'sapi',
@@ -286,6 +289,24 @@ class _MainPageState extends State<MainPage> {
               titleStyle: const TextStyle(color: Colors.black),
               icon: const Icon(Icons.people_alt_outlined),
               selectedIcon: const Icon(Icons.people_alt),
+            ),
+            SideMenuItemDataTile(
+              isSelected: widget.route == "booking",
+              onTap: () {
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(
+                    builder: (context) => MainPage(
+                      route: "booking",
+                    ),
+                  ),
+                );
+              },
+              title: 'Booking',
+              hoverColor: Warna.ungu,
+              highlightSelectedColor: Warna.ungu,
+              titleStyle: const TextStyle(color: Colors.black),
+              icon: const Icon(Icons.my_library_books_outlined),
+              selectedIcon: const Icon(Icons.my_library_books_sharp),
             ),
             SideMenuItemDataDivider(
               divider: Divider(

@@ -130,7 +130,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                               fontSize: 18,
                                             ),
                                           ),
-                                          Text("${snapshot.data!['no_telpon']}"),
+                                          Text("${snapshot.data!['no_telepon']}"),
                                         ],
                                       )
                                     ],

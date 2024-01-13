@@ -86,7 +86,7 @@ class _ChatPageState extends State<ChatPage> {
                           ),
                         ),
                         Text(
-                          "${snapshot.data!['no_telpon']}",
+                          "${snapshot.data!['no_telepon']}",
                           style: TextStyle(
                             fontWeight: FontWeight.w600,
                             fontSize: 14,
@@ -117,9 +117,7 @@ class _ChatPageState extends State<ChatPage> {
 
                         List<Map<dynamic, dynamic>> dataList = [];
                         data.forEach((key, value) {
-                          // Setiap data yang di perulangkan bakal di simpan ke dalam list
                           final currentData = Map<String, dynamic>.from(value);
-                          // Mensetting variable dengan total lembur dan gaji)
                           dataList.add({
                             'uid': key,
                             'durasi': currentData['durasi'],

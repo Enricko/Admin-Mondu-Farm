@@ -40,6 +40,17 @@ class _LoginPageState extends State<LoginPage> {
     };
     // Menjalankan Logic Class Function Auth Login
     Auth.login(data, context);
+
+    // //Testing
+    // var data = {
+    //   "nama": "enricko",
+    //   "email": "enricko.putra028@gmail.com",
+    //   // "level":"admin",
+    //   "password": "123qweasd",
+    //   "no_telepon": "085158426044",
+    // };
+    // Auth.signUp(data, context);
+
   }
 
   // Code yang bakal di jalankan pertama kali halaman ini dibuka
@@ -218,6 +229,9 @@ class _LoginPageState extends State<LoginPage> {
                         ],
                       ),
                     ),
+                    // ElevatedButton(onPressed: (){
+                    //   login(context);
+                    // }, child:Text("signup test"))
                   ],
                 ),
               ),

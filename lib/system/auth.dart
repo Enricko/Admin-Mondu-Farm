@@ -27,7 +27,7 @@ class Auth {
             pref.setString("nama", getUser['nama'].toString());
             pref.setString("email", getUser['email'].toString());
             pref.setString("level", getUser['level'].toString());
-            pref.setInt("no_telpon", getUser['no_telpon']);
+            pref.setInt("no_telepon", int.parse(getUser['no_telepon']));
             EasyLoading.showSuccess('Welcome Back', dismissOnTap: true);
             Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => MainPage()));
             return;
@@ -73,7 +73,7 @@ class Auth {
           "nama": data['nama'],
           "email": data['email'],
           "level": "admin",
-          "no_telpon": data['no_telpon'],
+          "no_telepon": data['no_telepon'],
         }).whenComplete(() {
           // Jika logic telah selesai berjalan, kode yang di bawah ini bakal jalan
           EasyLoading.showSuccess('Tambah Akun Berhasil', dismissOnTap: true, duration: const Duration(seconds: 5));
