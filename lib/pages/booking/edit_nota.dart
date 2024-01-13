@@ -20,6 +20,7 @@ import 'kirim_nota.dart';
 class EditNota extends StatefulWidget {
   final String id_ternak;
   final String id_user;
+  final String id_booking;
   final String kategori;
   final String nama;
   final String noTelepon;
@@ -30,7 +31,7 @@ class EditNota extends StatefulWidget {
       required this.id_ternak,
       required this.kategori,
       required this.nama,
-      required this.noTelepon, required this.tanggalBooking, required this.id_user});
+      required this.noTelepon, required this.tanggalBooking, required this.id_user, required this.id_booking});
 
   @override
   State<EditNota> createState() => _EditNotaState();
@@ -104,6 +105,7 @@ class _EditNotaState extends State<EditNota> {
   }
 
   void kirimNota(BuildContext context) {
+
     var data = {
       "nama": widget.nama,
       "no_telepon": widget.noTelepon,
@@ -114,7 +116,10 @@ class _EditNotaState extends State<EditNota> {
       "tinggi": tinggi,
       "harga": hargaController.text,
     };
-    Nota.kirimNota(data,widget.id_user,context);
+    var status = {
+      "status_booking": "Menunggu Pengambilan",
+    };
+    Nota.kirimNota(data,widget.id_user,widget.id_booking,status,context);
   }
 
   @override
@@ -126,6 +131,7 @@ class _EditNotaState extends State<EditNota> {
 
   @override
   Widget build(BuildContext context) {
+    // print(widget.id_booking);
     var width = MediaQuery.of(context).size.width;
     var height = MediaQuery.of(context).size.height;
     return Container(
@@ -147,6 +153,7 @@ class _EditNotaState extends State<EditNota> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
+              // widget.id_booking,
                     "Edit Nota",
                     style: GoogleFonts.openSans(
                         fontSize: 15, fontWeight: FontWeight.bold),
@@ -254,15 +261,15 @@ class _EditNotaState extends State<EditNota> {
                                       );
                                 }
                                 if (snapshot.hasError) {
-                                  return Image.asset("assets/gambar/placeholder.png",width: double.infinity,);
+                                  return Image.asset("assets/gambar/placeholder.png",width: 200,);
                                 }
                                 return Center(
                                   child: CircularProgressIndicator(),
                                 );
                               },
                             ),
-                            // Text("Berat Ternak = $berat Kg",
-                            //     style: Constants.labelstyle),
+                            Text("Berat Ternak = $berat Kg",
+                                style: Constants.labelstyle),
                             Row(
                               children: [
                                 Column(
@@ -274,7 +281,7 @@ class _EditNotaState extends State<EditNota> {
                                     ),
                                     Text(
                                       "Berat Ternak",
-                                      style: Constants.labelstyle,
+                                      style: Constants.labelstyle, 
                                     ),
                                     Text(
                                       "Tinggi Ternak",

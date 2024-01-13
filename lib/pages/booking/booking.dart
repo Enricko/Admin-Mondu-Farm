@@ -67,9 +67,8 @@ class _BookingTableState extends State<BookingTable> {
           stream: db.onValue,
           builder: (context, snapshot) {
             if (snapshot.hasData && (snapshot.data!).snapshot.value != null) {
-              // Variable data mempermudah memanggil data pada database
-              Map<dynamic, dynamic> data =
-                  Map<dynamic, dynamic>.from((snapshot.data!).snapshot.value as Map<dynamic, dynamic>);
+              Map<dynamic, dynamic> data = Map<dynamic, dynamic>.from(
+                  (snapshot.data!).snapshot.value as Map<dynamic, dynamic>);
               // data.removeWhere((key, value) => value['level'] == null || value['level'] == "user");
               deleteBookingIf2Days();
               return Expanded(
@@ -95,12 +94,17 @@ class _BookingTableState extends State<BookingTable> {
                                   DataColumn(label: Text("Action")),
                                 ],
                                 rows: data.entries
-                                    .where((element) => element.value['status_booking'] == "Sedang Di Booking")
+                                    .where((element) =>
+                                        element.value['status_booking'] ==
+                                        "Sedang Di Booking")
                                     .skip((page - 1) * perpage)
                                     .take(perpage)
                                     .map((val) {
-                                  var numberedTable = data.entries.toList().indexWhere(
-                                          (element) => element.value == val.value && element.key == val.key) +
+                                  var numberedTable = data.entries
+                                          .toList()
+                                          .indexWhere((element) =>
+                                              element.value == val.value &&
+                                              element.key == val.key) +
                                       1;
 
                                   return DataRow(cells: [
@@ -124,12 +128,26 @@ class _BookingTableState extends State<BookingTable> {
                                                         shape: const RoundedRectangleBorder(
                                                             borderRadius: BorderRadius.all(Radius.circular(5))),
                                                         child: EditNota(
-                                                          id_ternak: val.value['id_ternak']!.toString(),
-                                                          id_user: val.value['id_user']!.toString(),
-                                                          kategori: val.value['kategori']!.toString(),
-                                                          nama: val.value['nama']!.toString(),
-                                                          noTelepon: val.value['no_telepon']!.toString(),
-                                                          tanggalBooking: val.value['tanggal_booking']!.toString(),
+                                                          id_booking: val.key!,
+                                                          id_ternak: val.value[
+                                                                  'id_ternak']!
+                                                              .toString(),
+                                                          id_user: val
+                                                              .value['id_user']!
+                                                              .toString(),
+                                                          kategori: val.value[
+                                                                  'kategori']!
+                                                              .toString(),
+                                                          nama: val
+                                                              .value['nama']!
+                                                              .toString(),
+                                                          noTelepon: val.value[
+                                                                  'no_telepon']!
+                                                              .toString(),
+                                                          tanggalBooking: val
+                                                              .value[
+                                                                  'tanggal_booking']!
+                                                              .toString(),
                                                         ),
                                                       );
                                                     },
