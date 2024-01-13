@@ -67,10 +67,10 @@ class _BookingTableState extends State<BookingTable> {
           stream: db.onValue,
           builder: (context, snapshot) {
             if (snapshot.hasData && (snapshot.data!).snapshot.value != null) {
+              deleteBookingIf2Days();
               Map<dynamic, dynamic> data = Map<dynamic, dynamic>.from(
                   (snapshot.data!).snapshot.value as Map<dynamic, dynamic>);
               // data.removeWhere((key, value) => value['level'] == null || value['level'] == "user");
-              deleteBookingIf2Days();
               return Expanded(
                 child: Column(
                   children: [
