@@ -3,20 +3,26 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 class Nota {
-  static kirimNota(
-      Map<dynamic, dynamic> data, String idUser,String idBooking,Map<String, dynamic> status, BuildContext context) async {
+  static kirimNota(Map<dynamic, dynamic> data, String idUser, String idBooking,
+      BuildContext context) async {
     try {
+      var id_nota = FirebaseDatabase.instance.ref().push().key;
       EasyLoading.show(status: 'loading...');
-      await FirebaseDatabase.instance.ref()
+      await FirebaseDatabase.instance
+          .ref()
           .child("booking")
           .child(idBooking)
-          .update(status).then((value) {
+          .update({
+        "id_nota": id_nota,
+        "status_booking": "Menunggu Pengambilan",
+      }).then((value) {
         FirebaseDatabase.instance
             .ref()
             .child("nota")
             .child(idUser)
-            .push()
+            .child(id_nota!)
             .set({
+          "id_booking": idBooking.toString(),
           "nama": data['nama'].toString(),
           "no_telepon": data['no_telepon'].toString(),
           "urlGambar": data['urlGambar'].toString(),

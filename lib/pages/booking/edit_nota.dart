@@ -116,10 +116,12 @@ class _EditNotaState extends State<EditNota> {
       "tinggi": tinggi,
       "harga": hargaController.text,
     };
-    var status = {
-      "status_booking": "Menunggu Pengambilan",
-    };
-    Nota.kirimNota(data,widget.id_user,widget.id_booking,status,context);
+    // var status = {
+    //   "id_nota"
+    //   "status_booking": "Menunggu Pengambilan",
+    //
+    // };
+    Nota.kirimNota(data,widget.id_user,widget.id_booking,context);
   }
 
   @override
