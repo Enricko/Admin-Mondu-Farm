@@ -125,8 +125,7 @@ class _AudioChatWidgetState extends State<AudioChatWidget> {
                       ),
                       Column(
                         children: [
-                          Text("${_formatDuration(_position)}"),
-                          Text("${_formatDuration(Duration(milliseconds: widget.data['durasi']))}"),
+                          Text("${_formatDuration(_audioPlayer.playerState.playing ? _position : Duration(milliseconds: widget.data['durasi']))}"),
                         ],
                       ),
                     ],

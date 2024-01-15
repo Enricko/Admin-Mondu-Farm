@@ -66,6 +66,7 @@ class _DashboardPageState extends State<DashboardPage> {
         SizedBox(
           height: 25,
         ),
+        
         Expanded(
           child: Container(
             margin: EdgeInsets.symmetric(horizontal: 15),
