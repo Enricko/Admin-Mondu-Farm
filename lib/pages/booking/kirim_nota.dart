@@ -92,4 +92,39 @@ class Nota {
           dismissOnTap: true, duration: const Duration(seconds: 5));
     }
   }
+
+  static hapusNota(Map<dynamic, dynamic> data, BuildContext context) async {
+    try {
+      EasyLoading.show(status: 'loading...');
+      await FirebaseDatabase.instance
+          .ref()
+          .child("booking")
+          .child(data['id_booking'].toString())
+          .remove()
+          .then((value) {
+          FirebaseDatabase.instance
+              .ref()
+              .child("nota")
+              .child(data['id_user'].toString())
+              .child(data['id_nota'].toString())
+              .remove()
+              .then((value) {
+            FirebaseDatabase.instance
+                .ref()
+                .child("pesan")
+                .child(data['id_user'].toString())
+                .child(data['id_ternak'].toString())
+                .remove().whenComplete(() {
+              EasyLoading.showSuccess('Ternak Berhasil Dijual Kembali',
+                  dismissOnTap: true, duration: const Duration(seconds: 5));
+              // Navigator.pop(context);
+              return;
+            });
+          });
+      });
+    } on Exception catch (e) {
+      EasyLoading.showError('Ada Sesuatu Kesalahan : $e',
+          dismissOnTap: true, duration: const Duration(seconds: 5));
+    }
+  }
 }

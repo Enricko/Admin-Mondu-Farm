@@ -39,6 +39,17 @@ class _NotaTableState extends State<NotaTable> {
     Nota.accNota(data, context);
   }
 
+  void jualKembali(Map<dynamic, dynamic> dataId,BuildContext context) {
+    var data = {
+      "kategori": dataId['kategori'],
+      "id_ternak": dataId['id_ternak'],
+      "id_booking": dataId['id_booking'],
+      "id_user": dataId['id_user'],
+      "id_nota": dataId['id_nota'],
+    };
+    Nota.hapusNota(data, context);
+  }
+
   // Future<void> notaExpiredIf2Days() async {
   //   await FirebaseDatabase.instance.ref().child('nota').get().then((value) {
   //     Map<dynamic, dynamic> dataTernak = value.value as Map<dynamic, dynamic>;
@@ -113,7 +124,9 @@ class _NotaTableState extends State<NotaTable> {
                                   DataColumn(label: Text("No")),
                                   DataColumn(label: Text("Nama")),
                                   DataColumn(label: Text("No Telepon")),
+                                  DataColumn(label: Text("Kategori Ternak")),
                                   DataColumn(label: Text("Keterangan")),
+                                  DataColumn(label: Text("Aksi")),
                                   // DataColumn(label: Text("Kategori")),
                                   // DataColumn(label: Text("Action")),
                                 ],
@@ -350,10 +363,31 @@ class _NotaTableState extends State<NotaTable> {
             DataCell(Text("${i + 1}")),
             DataCell(Text(dataList[i]['nama'].toString())),
             DataCell(Text(dataList[i]['no_telepon'].toString())),
+            DataCell(Text(dataList[i]['kategori'].toString())),
+            DataCell(
+                (DateTime.parse(dataList[i]['tanggal_booking'].toString())
+                    .add(Duration(days: 2))
+                    .isBefore(DateTime.now()))
+                    ? Text("Expired")
+                    : Text("Menunggu Pengambilan")
+            ),
             DataCell((DateTime.parse(dataList[i]['tanggal_booking'].toString())
                         .add(Duration(days: 2))
                         .isBefore(DateTime.now()))
-                    ? Text("Expired")
+                    ? ElevatedButton(
+                onPressed: () {
+                  var data = ({
+                    'kategori' : dataList[i]['kategori'],
+                    'id_ternak' : dataList[i]['id_ternak'],
+                    'id_booking' : dataList[i]['id_booking'],
+                    'id_user' : dataList[i]['id_user'],
+                    'id_nota' : dataList[i]['id_nota'],
+                  });
+                  jualKembali(
+                      data,
+                      context);
+                },
+                child: Text("Jual Kembali"))
                     : ElevatedButton(
                         onPressed: () {
                           var data = ({
@@ -363,11 +397,12 @@ class _NotaTableState extends State<NotaTable> {
                             'id_user' : dataList[i]['id_user'],
                             'id_nota' : dataList[i]['id_nota'],
                           });
+
                           accNota(
-                            data,
+                              data,
                               context);
                         },
-                        child: Text("Ternak Sudah Di Ambil"))
+                        child: Text("Ternak Terjual"))
                 // Text(dataList[i]['no_telepon'].toString())
                 ),
             // DataCell(Text(dataList[i][''])),

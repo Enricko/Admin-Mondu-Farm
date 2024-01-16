@@ -27,25 +27,25 @@ class _BookingTableState extends State<BookingTable> {
     });
   }
 
-  Future<void> deleteBookingIf2Days() async {
-    await FirebaseDatabase.instance.ref().child('booking').get().then((value) {
-      Map<dynamic, dynamic> dataTernak = value.value as Map<dynamic, dynamic>;
-      dataTernak.entries.forEach((element) async {
-        if (DateTime.parse(element.value['tanggal_booking'].toString())
-            .add(Duration(days: 2))
-            .isBefore(DateTime.now())) {
-          await FirebaseDatabase.instance.ref().child("booking").child(element.key).remove();
-        }
-      });
-      setState(() {});
-    });
-  }
+  // Future<void> deleteBookingIf2Days() async {
+  //   await FirebaseDatabase.instance.ref().child('booking').get().then((value) {
+  //     Map<dynamic, dynamic> dataTernak = value.value as Map<dynamic, dynamic>;
+  //     dataTernak.entries.forEach((element) async {
+  //       if (DateTime.parse(element.value['tanggal_booking'].toString())
+  //           .add(Duration(days: 2))
+  //           .isBefore(DateTime.now())) {
+  //         await FirebaseDatabase.instance.ref().child("booking").child(element.key).remove();
+  //       }
+  //     });
+  //     setState(() {});
+  //   });
+  // }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    deleteBookingIf2Days();
+    // deleteBookingIf2Days();
   }
 
   @override
@@ -67,7 +67,7 @@ class _BookingTableState extends State<BookingTable> {
           stream: db.onValue,
           builder: (context, snapshot) {
             if (snapshot.hasData && (snapshot.data!).snapshot.value != null) {
-              deleteBookingIf2Days();
+              // deleteBookingIf2Days();
               Map<dynamic, dynamic> data = Map<dynamic, dynamic>.from(
                   (snapshot.data!).snapshot.value as Map<dynamic, dynamic>);
               // data.removeWhere((key, value) => value['level'] == null || value['level'] == "user");

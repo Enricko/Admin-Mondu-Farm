@@ -81,14 +81,14 @@ class _InsertTernakFormState extends State<InsertTernakForm> {
           'gambar': imageName,
         };
 
-        FirebaseDatabase.instance
+       await FirebaseDatabase.instance
             .ref()
             .child("ternak")
             .child(widget.kategori.toString().toLowerCase())
             .push()
             .set(val)
             .whenComplete(() {
-          EasyLoading.showSuccess('Sapi telah di tambahkan', dismissOnTap: true, duration: Duration(seconds: 3));
+          EasyLoading.showSuccess('${widget.kategori} telah di tambahkan', dismissOnTap: true, duration: Duration(seconds: 3));
           Navigator.pop(context);
           return;
         });
