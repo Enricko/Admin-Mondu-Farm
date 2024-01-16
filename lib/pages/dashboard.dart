@@ -48,19 +48,19 @@ class _DashboardPageState extends State<DashboardPage> {
             // SizedBox(
             //   width: 10,
             // ),
-            Tooltip(
-              message: "Booking",
-              child: Container(
-                width: 50,
-                height: 50,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: Warna.ungu,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Icon(Icons.library_books),
-              ),
-            ),
+            // Tooltip(
+            //   message: "Booking",
+            //   child: Container(
+            //     width: 50,
+            //     height: 50,
+            //     alignment: Alignment.center,
+            //     decoration: BoxDecoration(
+            //       color: Warna.ungu,
+            //       borderRadius: BorderRadius.circular(10),
+            //     ),
+            //     child: Icon(Icons.library_books),
+            //   ),
+            // ),
           ],
         ),
         SizedBox(

@@ -69,8 +69,6 @@ class _EditNotaState extends State<EditNota> {
   );
 
   Future<void> getUserFromFirebase() async {
-    print(widget.kategori);
-    print(widget.id_ternak);
     try {
       FirebaseDatabase.instance
           .ref()
@@ -80,6 +78,7 @@ class _EditNotaState extends State<EditNota> {
           .onValue
           .listen((event) {
         var snapshot = event.snapshot.value as Map;
+        print(snapshot['gambar']);
         setState(() {
           umur = snapshot['usia'].toString();
           berat = snapshot['berat'].toString();
@@ -99,8 +98,8 @@ class _EditNotaState extends State<EditNota> {
         .ref()
         .child("ternak")
         .child(widget.kategori.toLowerCase())
-        .child(widget.id_ternak)
         .child(pathName);
+print(ref.getDownloadURL());
     return ref.getDownloadURL();
   }
 
@@ -110,6 +109,7 @@ class _EditNotaState extends State<EditNota> {
       "nama": widget.nama,
       "no_telepon": widget.noTelepon,
       "urlGambar": urlGambar,
+      "kategori": widget.kategori,
       "tanggal_booking": widget.tanggalBooking,
       "umur": umur,
       "berat": berat,
@@ -121,7 +121,7 @@ class _EditNotaState extends State<EditNota> {
     //   "status_booking": "Menunggu Pengambilan",
     //
     // };
-    Nota.kirimNota(data,widget.id_user,widget.id_booking,context);
+    Nota.kirimNota(data,widget.id_user,widget.id_booking,widget.id_ternak,context);
   }
 
   @override
@@ -257,21 +257,21 @@ class _EditNotaState extends State<EditNota> {
                               future: getImageFromStorage(urlGambar!),
                               builder: (context, snapshot) {
                                 if (snapshot.hasData) {
-                                  return Card(
+                                  return ClipRRect(
+                                    borderRadius: BorderRadius.circular(10),
                                           child: Image.network(snapshot.data!,
                                               fit: BoxFit.fill)
                                       );
                                 }
-                                if (snapshot.hasError) {
-                                  return Image.asset("assets/gambar/placeholder.png",width: 200,);
-                                }
+                                // if (snapshot.hasError) {
+                                //   return Image.asset("assets/gambar/placeholder.png",width: 200,);
+                                // }
                                 return Center(
                                   child: CircularProgressIndicator(),
                                 );
                               },
                             ),
-                            Text("Berat Ternak = $berat Kg",
-                                style: Constants.labelstyle),
+                            SizedBox(height: 10,),
                             Row(
                               children: [
                                 Column(

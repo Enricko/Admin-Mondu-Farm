@@ -118,7 +118,7 @@ class _UserTableState extends State<UserTable> {
                                   return DataRow(cells: [
                                     DataCell(Text(numberedTable.toString())),
                                     DataCell(Text(val.value['nama'])),
-                                    DataCell(Text(val.value['no_telepon']!.toString())),
+                                    DataCell(Text(val.value['no_telepon'].toString())),
                                     DataCell(Row(
                                       children: [
                                         Tooltip(

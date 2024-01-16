@@ -124,6 +124,17 @@ class _BookingTableState extends State<BookingTable> {
                                                     context: context,
                                                     barrierDismissible: false,
                                                     builder: (BuildContext context) {
+                                                      // print(val.key);
+                                                      // print(val.value[
+                                                      // 'id_ternak']);
+                                                      // print(val.value['id_user']);
+                                                      // print(val.value[
+                                                      // 'kategori']);
+                                                      // print(val.value['nama']);
+                                                      // print(val.value[
+                                                      // 'no_telepon']);
+                                                      // print(val.value[
+                                                      // 'tanggal_booking']);
                                                       return Dialog(
                                                         shape: const RoundedRectangleBorder(
                                                             borderRadius: BorderRadius.all(Radius.circular(5))),

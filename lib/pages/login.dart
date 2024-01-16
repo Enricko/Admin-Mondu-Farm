@@ -16,6 +16,8 @@ class _LoginPageState extends State<LoginPage> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
+  bool invisible = true;
+
   void cekUser() async {
     await FirebaseAuth.instance.currentUser;
     // Logic cek Data User apakah sudah pernah login
@@ -181,7 +183,7 @@ class _LoginPageState extends State<LoginPage> {
                               Expanded(
                                 child: TextFormField(
                                   keyboardType: TextInputType.visiblePassword,
-                                  obscureText: true,
+                                  obscureText: invisible,
                                   validator: (value) {
                                     if (value == null || value == "") {
                                       return "Mohon form-nya diisi.";
@@ -189,9 +191,19 @@ class _LoginPageState extends State<LoginPage> {
                                     return null;
                                   },
                                   controller: passwordController,
-                                  decoration: const InputDecoration(
+                                  decoration: InputDecoration(
                                     labelText: "Password",
-                                    suffixIcon: Icon(Icons.remove_red_eye_rounded),
+                                    suffixIcon: IconButton(
+                                      icon: Icon((invisible == true)
+                                          ? Icons.visibility_outlined
+                                          : Icons.visibility_off),
+                                      onPressed: () {
+                                        setState(() {
+                                          invisible = !invisible;
+                                        });
+                                      },
+                                    ),
+                                    // suffixIcon: Icon(Icons.remove_red_eye_rounded),
                                     focusedBorder: OutlineInputBorder(
                                       borderSide: BorderSide(width: 1, color: Colors.blueAccent),
                                     ),

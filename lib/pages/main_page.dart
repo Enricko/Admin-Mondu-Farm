@@ -14,6 +14,8 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_side_menu/flutter_side_menu.dart';
 
+import 'nota/nota.dart';
+
 class MainPage extends StatefulWidget {
   const MainPage({
     super.key,
@@ -112,6 +114,8 @@ class _MainPageState extends State<MainPage> {
         return AdminTable();
       case "booking":
         return BookingTable();
+      case "nota":
+        return NotaTable();
       case "sapi":
         return TableTernak(
           kategori: 'sapi',
@@ -307,6 +311,24 @@ class _MainPageState extends State<MainPage> {
               titleStyle: const TextStyle(color: Colors.black),
               icon: const Icon(Icons.my_library_books_outlined),
               selectedIcon: const Icon(Icons.my_library_books_sharp),
+            ),
+            SideMenuItemDataTile(
+              isSelected: widget.route == "nota",
+              onTap: () {
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(
+                    builder: (context) => MainPage(
+                      route: "nota",
+                    ),
+                  ),
+                );
+              },
+              title: 'Nota',
+              hoverColor: Warna.ungu,
+              highlightSelectedColor: Warna.ungu,
+              titleStyle: const TextStyle(color: Colors.black),
+              icon: const Icon(Icons.file_copy_outlined),
+              selectedIcon: const Icon(Icons.file_copy),
             ),
             SideMenuItemDataDivider(
               divider: Divider(
