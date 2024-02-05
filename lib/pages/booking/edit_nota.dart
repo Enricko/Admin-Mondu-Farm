@@ -47,6 +47,7 @@ class _EditNotaState extends State<EditNota> {
   String? berat;
   String? tinggi;
   String? urlGambar;
+  String? url;
   final _formKey = GlobalKey<FormState>();
   bool ignorePointer = false;
   Timer? ignorePointerTimer;
@@ -108,7 +109,7 @@ print(ref.getDownloadURL());
     var data = {
       "nama": widget.nama,
       "no_telepon": widget.noTelepon,
-      "urlGambar": urlGambar,
+      "urlGambar": url,
       "kategori": widget.kategori,
       "tanggal_booking": widget.tanggalBooking,
       "umur": umur,
@@ -257,6 +258,7 @@ print(ref.getDownloadURL());
                               future: getImageFromStorage(urlGambar!),
                               builder: (context, snapshot) {
                                 if (snapshot.hasData) {
+                                  url = snapshot.data!;
                                   return ClipRRect(
                                     borderRadius: BorderRadius.circular(10),
                                           child: Image.network(snapshot.data!,
