@@ -65,47 +65,97 @@ class _EditTernakFormState extends State<EditTernakForm> {
     }
   }
 
-  File? file;
-  ImagePicker image = ImagePicker();
-  Uint8List webImage = Uint8List(8);
-  var url;
+  File? file_1;
+  ImagePicker image_1 = ImagePicker();
+  Uint8List webImage_1 = Uint8List(8);
+  File? file_2;
+  ImagePicker image_2 = ImagePicker();
+  Uint8List webImage_2 = Uint8List(8);
+  File? file_3;
+  ImagePicker image_3 = ImagePicker();
+  Uint8List webImage_3 = Uint8List(8);
 
-  getImage() async {
-    XFile? img = await image.pickImage(source: ImageSource.gallery);
+  getImage1() async {
+    XFile? img = await image_1.pickImage(source: ImageSource.gallery);
     var f = await img!.readAsBytes();
     setState(() {
-      webImage = f;
-      file = File(img.path);
+      webImage_1 = f;
+      file_1 = File(img.path);
+    });
+  }
+
+  getImage2() async {
+    XFile? img = await image_2.pickImage(source: ImageSource.gallery);
+    var f = await img!.readAsBytes();
+    setState(() {
+      webImage_2 = f;
+      file_2 = File(img.path);
+    });
+  }
+
+  getImage3() async {
+    XFile? img = await image_3.pickImage(source: ImageSource.gallery);
+    var f = await img!.readAsBytes();
+    setState(() {
+      webImage_3 = f;
+      file_3 = File(img.path);
     });
   }
 
   updateData() async {
     try {
-      String? imageName;
-      if (webImage != null && file != null) {
+      String? imageName_1;
+      String? imageName_2;
+      String? imageName_3;
+      if ((webImage_1.isNotEmpty && file_1 != null) &&
+          (webImage_2.isNotEmpty && file_2 != null) &&
+          (webImage_3.isNotEmpty && file_3 != null)) {
         var metadata = SettableMetadata(
           contentType: "image/jpeg",
         );
-        imageName = "${generateRandomString(10)}-${DateTime.now()}.png";
-        var imagefile = FirebaseStorage.instance
+        imageName_1 = "${generateRandomString(10)}-${DateTime.now()}.png";
+        imageName_2 = "${generateRandomString(10)}-${DateTime.now()}.png";
+        imageName_3 = "${generateRandomString(10)}-${DateTime.now()}.png";
+        var imagefile_1 = FirebaseStorage.instance
             .ref()
             .child("ternak")
             .child(widget.kategori.toString().toLowerCase())
-            .child(imageName);
+            .child(imageName_1);
+        var imagefile_2 = FirebaseStorage.instance
+            .ref()
+            .child("ternak")
+            .child(widget.kategori.toString().toLowerCase())
+            .child(imageName_2);
+        var imagefile_3 = FirebaseStorage.instance
+            .ref()
+            .child("ternak")
+            .child(widget.kategori.toString().toLowerCase())
+            .child(imageName_3);
 
         if (!kIsWeb) {
-          imagefile.putFile(file!, metadata);
+          imagefile_1.putFile(file_1!, metadata);
+          imagefile_2.putFile(file_2!, metadata);
+          imagefile_3.putFile(file_3!, metadata);
         } else {
-          imagefile.putData(webImage, metadata);
+          imagefile_1.putData(webImage_1, metadata);
+          imagefile_2.putData(webImage_2, metadata);
+          imagefile_3.putData(webImage_3, metadata);
         }
-        FirebaseStorage.instance.ref().child("ternak").child("sapi").child(widget.data['gambar']).delete();
+        FirebaseStorage.instance
+            .ref()
+            .child("ternak")
+            .child("sapi")
+            .child(widget.data['gambar'])
+            .delete();
       }
       Map<String, dynamic> val = {
         'usia': int.parse(usiaController.text),
         "tinggi": int.parse(tinggiController.text),
         "berat": int.parse(beratController.text),
         "harga": int.parse(hargaController.text.replaceAll(RegExp(r'[^0-9]'), '')),
-        'gambar': imageName ?? widget.data['gambar'],
+        'gambar_1': imageName_1 ?? widget.data['gambar_1'],
+        'gambar_2': imageName_2 ?? widget.data['gambar_2'],
+        'gambar_3': imageName_3 ?? widget.data['gambar_3'],
       };
 
       FirebaseDatabase.instance
@@ -115,7 +165,8 @@ class _EditTernakFormState extends State<EditTernakForm> {
           .child(widget.id)
           .update(val)
           .whenComplete(() {
-        EasyLoading.showSuccess('Sapi telah di rubah', dismissOnTap: true, duration: Duration(seconds: 3));
+        EasyLoading.showSuccess('Sapi telah di rubah',
+            dismissOnTap: true, duration: Duration(seconds: 3));
         Navigator.pop(context);
         return;
       });
@@ -135,7 +186,6 @@ class _EditTernakFormState extends State<EditTernakForm> {
       });
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -184,40 +234,116 @@ class _EditTernakFormState extends State<EditTernakForm> {
                           const SizedBox(
                             height: 5,
                           ),
-                          Center(
-                            child: Container(
-                              height: 200,
-                              width: 200,
-                              child: file == null
-                                  ? Tooltip(
-                                      message: "Upload Image",
-                                      child: IconButton(
-                                        icon: Icon(
-                                          Icons.add_a_photo,
-                                          size: 90,
-                                          color: Color.fromARGB(255, 179, 179, 179),
-                                        ),
-                                        onPressed: () {
-                                          getImage();
-                                        },
-                                      ),
-                                    )
-                                  : MaterialButton(
-                                      height: 100,
-                                      child: kIsWeb
-                                          ? Image.memory(
-                                              webImage,
-                                              fit: BoxFit.fill,
-                                            )
-                                          : Image.file(
-                                              file!,
-                                              fit: BoxFit.fill,
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Center(
+                                child: Container(
+                                  height: 100,
+                                  width: 100,
+                                  child: file_1 == null
+                                      ? Tooltip(
+                                          message: "Upload Image",
+                                          child: IconButton(
+                                            icon: Icon(
+                                              Icons.add_a_photo,
+                                              size: 50,
+                                              color: Color.fromARGB(255, 179, 179, 179),
                                             ),
-                                      onPressed: () {
-                                        getImage();
-                                      },
-                                    ),
-                            ),
+                                            onPressed: () {
+                                              getImage1();
+                                            },
+                                          ),
+                                        )
+                                      : MaterialButton(
+                                          height: 100,
+                                          child: kIsWeb
+                                              ? Image.memory(
+                                                  webImage_1,
+                                                  fit: BoxFit.fill,
+                                                )
+                                              : Image.file(
+                                                  file_1!,
+                                                  fit: BoxFit.fill,
+                                                ),
+                                          onPressed: () {
+                                            getImage1();
+                                          },
+                                        ),
+                                ),
+                              ),
+                              Center(
+                                child: Container(
+                                  height: 100,
+                                  width: 100,
+                                  child: file_2 == null
+                                      ? Tooltip(
+                                          message: "Upload Image",
+                                          child: IconButton(
+                                            icon: Icon(
+                                              Icons.add_a_photo,
+                                              size: 50,
+                                              color: Color.fromARGB(255, 179, 179, 179),
+                                            ),
+                                            onPressed: () {
+                                              getImage2();
+                                            },
+                                          ),
+                                        )
+                                      : MaterialButton(
+                                          height: 100,
+                                          child: kIsWeb
+                                              ? Image.memory(
+                                                  webImage_2,
+                                                  fit: BoxFit.fill,
+                                                )
+                                              : Image.file(
+                                                  file_2!,
+                                                  fit: BoxFit.fill,
+                                                ),
+                                          onPressed: () {
+                                            getImage2();
+                                          },
+                                        ),
+                                ),
+                              ),
+                              Center(
+                                child: Container(
+                                  height: 100,
+                                  width: 100,
+                                  child: file_3 == null
+                                      ? Tooltip(
+                                          message: "Upload Image",
+                                          child: IconButton(
+                                            icon: Icon(
+                                              Icons.add_a_photo,
+                                              size: 50,
+                                              color: Color.fromARGB(255, 179, 179, 179),
+                                            ),
+                                            onPressed: () {
+                                              getImage3();
+                                            },
+                                          ),
+                                        )
+                                      : MaterialButton(
+                                          height: 100,
+                                          child: kIsWeb
+                                              ? Image.memory(
+                                                  webImage_3,
+                                                  fit: BoxFit.fill,
+                                                )
+                                              : Image.file(
+                                                  file_3!,
+                                                  fit: BoxFit.fill,
+                                                ),
+                                          onPressed: () {
+                                            getImage3();
+                                          },
+                                        ),
+                                ),
+                              ),
+                            ],
                           ),
                           CustomTextField(
                             controller: usiaController,
@@ -303,7 +429,8 @@ class _EditTernakFormState extends State<EditTernakForm> {
                         TextButton(
                           style: ButtonStyle(
                               shape: MaterialStateProperty.all(RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(5), side: BorderSide(color: Warna.ungu)))),
+                                  borderRadius: BorderRadius.circular(5),
+                                  side: BorderSide(color: Warna.ungu)))),
                           onPressed: () {
                             Navigator.pop(context);
                           },

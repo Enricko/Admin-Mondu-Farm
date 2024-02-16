@@ -153,7 +153,9 @@ class _TableTernakState extends State<TableTernak> {
                                 border: TableBorder.all(width: 1, color: Colors.black),
                                 columns: const [
                                   DataColumn(label: Text("No")),
-                                  DataColumn(label: Text("Gambar")),
+                                  DataColumn(label: Text("Gambar1")),
+                                  DataColumn(label: Text("Gambar2")),
+                                  DataColumn(label: Text("Gambar3")),
                                   DataColumn(label: Text("Usia")),
                                   DataColumn(label: Text("Tinggi")),
                                   DataColumn(label: Text("Berat")),
@@ -170,7 +172,47 @@ class _TableTernakState extends State<TableTernak> {
                                     DataCell(Text(numberedTable.toString())),
                                     DataCell(
                                       FutureBuilder<String>(
-                                        future: getImageFromStorage(val.value['gambar']),
+                                        future: getImageFromStorage(val.value['gambar_1']),
+                                        builder: (context, snapshot) {
+                                          if (snapshot.hasData) {
+                                            return Container(
+                                              margin: EdgeInsets.all(5),
+                                              child: Image.network(
+                                                snapshot.data!,
+                                                width: 150,
+                                              ),
+                                            );
+                                          }
+
+                                          return Center(
+                                            child: CircularProgressIndicator(),
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                    DataCell(
+                                      FutureBuilder<String>(
+                                        future: getImageFromStorage(val.value['gambar_2']),
+                                        builder: (context, snapshot) {
+                                          if (snapshot.hasData) {
+                                            return Container(
+                                              margin: EdgeInsets.all(5),
+                                              child: Image.network(
+                                                snapshot.data!,
+                                                width: 150,
+                                              ),
+                                            );
+                                          }
+
+                                          return Center(
+                                            child: CircularProgressIndicator(),
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                    DataCell(
+                                      FutureBuilder<String>(
+                                        future: getImageFromStorage(val.value['gambar_3']),
                                         builder: (context, snapshot) {
                                           if (snapshot.hasData) {
                                             return Container(
