@@ -34,7 +34,7 @@ class Auth {
           } else {
             FirebaseDatabase.instance.ref().child("users").child(user.user!.uid).remove();
             FirebaseAuth.instance.currentUser!.delete();
-            EasyLoading.showError('Maaf akun ada tidak ada', dismissOnTap: true);
+            EasyLoading.showError('Maaf akun anda tidak ada', dismissOnTap: true);
             return; 
           }
         });
