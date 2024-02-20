@@ -36,6 +36,7 @@ class _ChatListState extends State<ChatList> {
 
   @override
   Widget build(BuildContext context) {
+    print(widget.idUser);
     return Column(
       children: [
         Container(
@@ -129,7 +130,7 @@ class _ChatListState extends State<ChatList> {
                                       width: 150,
                                       height: 75,
                                       child: FutureBuilder(
-                                        future: getImageFromStorage(data['gambar'], dataList[index]['kategori']),
+                                        future: getImageFromStorage(data['gambar_1'], dataList[index]['kategori']),
                                         builder: (context, snapshot) {
                                           if (snapshot.hasData) {
                                             return Image.network(

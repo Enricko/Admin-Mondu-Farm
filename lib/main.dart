@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:admin_mondu_farm/firebase_options.dart';
 import 'package:admin_mondu_farm/pages/main_page.dart';
 import 'package:admin_mondu_farm/pages/login.dart';
@@ -29,6 +31,14 @@ class MyApp extends StatelessWidget {
       ),
       home: FirebaseAuth.instance.currentUser == null ? LoginPage() : MainPage(),
       builder: EasyLoading.init(),
+      scrollBehavior: const MaterialScrollBehavior().copyWith(
+        dragDevices: {
+          PointerDeviceKind.mouse,
+          PointerDeviceKind.touch,
+          PointerDeviceKind.stylus,
+          PointerDeviceKind.unknown
+        },
+      ),
     );
   }
 }

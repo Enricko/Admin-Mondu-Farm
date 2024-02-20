@@ -207,8 +207,8 @@ class _InsertTernakFormState extends State<InsertTernakForm> {
               ],
             ),
           ),
-          Container(
-            height: 485,
+          Expanded(
+            // height: 485,
             child: Padding(
               padding: const EdgeInsets.all(8),
               child: SingleChildScrollView(

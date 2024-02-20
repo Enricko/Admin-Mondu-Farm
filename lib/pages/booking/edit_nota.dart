@@ -85,7 +85,7 @@ class _EditNotaState extends State<EditNota> {
           berat = snapshot['berat'].toString();
           tinggi = snapshot['tinggi'].toString();
           hargaController.text = currencyFormatter.format(snapshot['harga']);
-          urlGambar = snapshot['gambar'].toString();
+          urlGambar = snapshot['gambar_1'].toString();
         });
       });
     } catch (e) {

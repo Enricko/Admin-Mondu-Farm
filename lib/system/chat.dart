@@ -42,7 +42,7 @@ class Chat {
           String linkPath = await fileStorage.getDownloadURL();
           Map<String, dynamic> data = {
             "pesan": linkPath,
-            "pesan_dari": "user",
+            "pesan_dari": "admin",
             "durasi": durasi,
             "type": "voice",
             "tanggal": DateTime.now().toString(),
@@ -56,7 +56,7 @@ class Chat {
           String linkPath = await fileStorage.getDownloadURL();
           Map<String, dynamic> data = {
             "pesan": linkPath,
-            "pesan_dari": "user",
+            "pesan_dari": "admin",
             "durasi": durasi,
             "type": "voice",
             "tanggal": DateTime.now().toString(),

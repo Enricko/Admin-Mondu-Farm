@@ -87,7 +87,7 @@ class _AdminTableState extends State<AdminTable> {
               },
             );
           },
-          child: Text("Tambah User"),
+          child: Text("Tambah Admin"),
         ),
         SizedBox(
           height: 25,
@@ -103,91 +103,89 @@ class _AdminTableState extends State<AdminTable> {
               return Expanded(
                 child: Column(
                   children: [
-                    Expanded(
-                      child: Container(
-                        alignment: Alignment.topCenter,
-                        margin: const EdgeInsets.symmetric(horizontal: 15),
+                    Container(
+                      alignment: Alignment.topCenter,
+                      margin: const EdgeInsets.symmetric(horizontal: 15),
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
                         child: SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: SingleChildScrollView(
-                            child: DataTable(
-                                headingRowColor: MaterialStateProperty.all(const Color(0xffd3d3d3)),
-                                dataRowColor: MaterialStateProperty.all(const Color(0xffd3d3d3).withOpacity(0.7)),
-                                border: TableBorder.all(width: 1, color: Colors.black),
-                                columns: const [
-                                  DataColumn(label: Text("No")),
-                                  DataColumn(label: Text("Nama")),
-                                  DataColumn(label: Text("Email")),
-                                  DataColumn(label: Text("No Telphone")),
-                                  DataColumn(label: Text("Action")),
-                                ],
-                                rows: data.entries.skip((page - 1) * perpage).take(perpage).map((val) {
-                                  var numberedTable = data.entries.toList().indexWhere(
-                                          (element) => element.value == val.value && element.key == val.key) +
-                                      1;
-                                  return DataRow(cells: [
-                                    DataCell(Text(numberedTable.toString())),
-                                    DataCell(Text(val.value['nama'])),
-                                    DataCell(Text(val.value['email']!)),
-                                    DataCell(Text(val.value['no_telepon']!.toString())),
-                                    DataCell(Row(
-                                      children: [
-                                        Tooltip(
-                                          message: "Edit",
-                                          child: IconButton(
-                                            icon: const Icon(
-                                              Icons.edit,
-                                              color: Colors.blue,
-                                            ),
-                                            onPressed: () {
-                                              showDialog(
-                                                context: context,
-                                                barrierDismissible: false,
-                                                builder: (BuildContext context) {
-                                                  return Dialog(
-                                                    shape: const RoundedRectangleBorder(
-                                                        borderRadius: BorderRadius.all(Radius.circular(5))),
-                                                    child: EditUserForm(
-                                                      width: width,
-                                                      formKey: _formKey,
-                                                      id: val.key,
-                                                      data: val.value,
-                                                    ),
-                                                  );
-                                                },
-                                              );
-                                            },
+                          child: DataTable(
+                              headingRowColor: MaterialStateProperty.all(const Color(0xffd3d3d3)),
+                              dataRowColor: MaterialStateProperty.all(const Color(0xffd3d3d3).withOpacity(0.7)),
+                              border: TableBorder.all(width: 1, color: Colors.black),
+                              columns: const [
+                                DataColumn(label: Text("No")),
+                                DataColumn(label: Text("Nama")),
+                                DataColumn(label: Text("Email")),
+                                DataColumn(label: Text("No Telphone")),
+                                DataColumn(label: Text("Action")),
+                              ],
+                              rows: data.entries.skip((page - 1) * perpage).take(perpage).map((val) {
+                                var numberedTable = data.entries.toList().indexWhere(
+                                        (element) => element.value == val.value && element.key == val.key) +
+                                    1;
+                                return DataRow(cells: [
+                                  DataCell(Text(numberedTable.toString())),
+                                  DataCell(Text(val.value['nama'])),
+                                  DataCell(Text(val.value['email']!)),
+                                  DataCell(Text(val.value['no_telepon']!.toString())),
+                                  DataCell(Row(
+                                    children: [
+                                      Tooltip(
+                                        message: "Edit",
+                                        child: IconButton(
+                                          icon: const Icon(
+                                            Icons.edit,
+                                            color: Colors.blue,
                                           ),
+                                          onPressed: () {
+                                            showDialog(
+                                              context: context,
+                                              barrierDismissible: false,
+                                              builder: (BuildContext context) {
+                                                return Dialog(
+                                                  shape: const RoundedRectangleBorder(
+                                                      borderRadius: BorderRadius.all(Radius.circular(5))),
+                                                  child: EditUserForm(
+                                                    width: width,
+                                                    formKey: _formKey,
+                                                    id: val.key,
+                                                    data: val.value,
+                                                  ),
+                                                );
+                                              },
+                                            );
+                                          },
                                         ),
-                                        Tooltip(
-                                          message: "Delete",
-                                          child: IconButton(
-                                            icon: const Icon(
-                                              Icons.delete,
-                                              color: Colors.red,
-                                            ),
-                                            onPressed: () {
-                                              Alerts.showAlertYesNo(
-                                                title: "Are you sure you want to delete this data?",
-                                                onPressYes: () async {
-                                                  db.child(val.key).remove();
-                                                  EasyLoading.showSuccess("Data berhasil di hapus.",
-                                                      dismissOnTap: true, duration: Duration(seconds: 3));
-                                                  Navigator.pop(context);
-                                                },
-                                                onPressNo: () {
-                                                  Navigator.pop(context);
-                                                },
-                                                context: context,
-                                              );
-                                            },
+                                      ),
+                                      Tooltip(
+                                        message: "Delete",
+                                        child: IconButton(
+                                          icon: const Icon(
+                                            Icons.delete,
+                                            color: Colors.red,
                                           ),
+                                          onPressed: () {
+                                            Alerts.showAlertYesNo(
+                                              title: "Are you sure you want to delete this data?",
+                                              onPressYes: () async {
+                                                db.child(val.key).remove();
+                                                EasyLoading.showSuccess("Data berhasil di hapus.",
+                                                    dismissOnTap: true, duration: Duration(seconds: 3));
+                                                Navigator.pop(context);
+                                              },
+                                              onPressNo: () {
+                                                Navigator.pop(context);
+                                              },
+                                              context: context,
+                                            );
+                                          },
                                         ),
-                                      ],
-                                    )),
-                                  ]);
-                                }).toList()),
-                          ),
+                                      ),
+                                    ],
+                                  )),
+                                ]);
+                              }).toList()),
                         ),
                       ),
                     ),
