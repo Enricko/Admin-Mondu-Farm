@@ -86,9 +86,10 @@ class _InsertTernakFormState extends State<InsertTernakForm> {
         var metadata = SettableMetadata(
           contentType: "image/jpeg",
         );
-        String imageName_1 = "${generateRandomString(10)}-${DateTime.now()}.png";
-        String imageName_2 = "${generateRandomString(10)}-${DateTime.now()}.png";
-        String imageName_3 = "${generateRandomString(10)}-${DateTime.now()}.png";
+        String imageName_1 = "${generateRandomString(10)}-${"GAMBAR1"}.png";
+        String imageName_2 = "${generateRandomString(10)}-${"GAMBAR2"}.png";
+        String imageName_3 = "${generateRandomString(10)}-${"GAMBAR3"}.png";
+        // String imageName_3 = "${generateRandomString(10)}-${DateTime.now()}.png";
         var imagefile_1 = FirebaseStorage.instance
             .ref()
             .child("ternak")
@@ -137,7 +138,7 @@ class _InsertTernakFormState extends State<InsertTernakForm> {
           return;
         });
       } else {
-        EasyLoading.showError('Mohon Gambarnya di isi',
+        EasyLoading.showError('Gambar Kosong',
             dismissOnTap: true, duration: Duration(seconds: 3));
       }
     } on Exception catch (e) {
