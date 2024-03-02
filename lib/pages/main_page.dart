@@ -354,11 +354,11 @@ class _MainPageState extends State<MainPage> {
                 );
               },
               title: 'Sapi',
-              icon: const Icon(Icons.filter_hdr_outlined),
+              icon: const Icon(Icons.grass_outlined),
               hoverColor: Warna.ungu,
               highlightSelectedColor: Warna.ungu,
               titleStyle: const TextStyle(color: Colors.black),
-              selectedIcon: const Icon(Icons.filter_hdr_sharp),
+              selectedIcon: const Icon(Icons.grass),
             ),
             SideMenuItemDataTile(
               isSelected: widget.route == "kuda",
@@ -372,11 +372,11 @@ class _MainPageState extends State<MainPage> {
                 );
               },
               title: 'kuda',
-              icon: const Icon(Icons.filter_hdr_outlined),
+              icon: const Icon(Icons.grass_outlined),
               hoverColor: Warna.ungu,
               highlightSelectedColor: Warna.ungu,
               titleStyle: const TextStyle(color: Colors.black),
-              selectedIcon: const Icon(Icons.filter_hdr_sharp),
+              selectedIcon: const Icon(Icons.grass),
             ),
             SideMenuItemDataTile(
               isSelected: widget.route == "kerbau",
@@ -390,11 +390,11 @@ class _MainPageState extends State<MainPage> {
                 );
               },
               title: 'kerbau',
-              icon: const Icon(Icons.filter_hdr_outlined),
+              icon: const Icon(Icons.grass_outlined),
               hoverColor: Warna.ungu,
               highlightSelectedColor: Warna.ungu,
               titleStyle: const TextStyle(color: Colors.black),
-              selectedIcon: const Icon(Icons.filter_hdr_sharp),
+              selectedIcon: const Icon(Icons.grass),
             ),
             SideMenuItemDataTile(
               isSelected: widget.route == "kambing",
@@ -408,11 +408,11 @@ class _MainPageState extends State<MainPage> {
                 );
               },
               title: 'kambing',
-              icon: const Icon(Icons.filter_hdr_outlined),
+              icon: const Icon(Icons.grass_outlined),
               hoverColor: Warna.ungu,
               highlightSelectedColor: Warna.ungu,
               titleStyle: const TextStyle(color: Colors.black),
-              selectedIcon: const Icon(Icons.filter_hdr_sharp),
+              selectedIcon: const Icon(Icons.grass),
             ),
             SideMenuItemDataDivider(
               divider: Divider(
