@@ -272,32 +272,43 @@ class _TableTernakState extends State<TableTernak> {
                                             ),
                                             onPressed: () {
                                               Alerts.showAlertYesNo(
-                                                title: "Are you sure you want to delete this data?",
+                                                title: "Apakah anda yakin?",
                                                 onPressYes: () async {
                                                   EasyLoading.show(status: "Loading...");
-                                                  FirebaseStorage.instance
-                                                      .ref()
-                                                      .child("ternak")
-                                                      .child(widget.kategori.toLowerCase())
-                                                      .child(val.value['gambar'])
-                                                      .delete()
+                                                  db.child(widget.kategori.toLowerCase())
+                                                      .child(val.key)
+                                                      .remove()
                                                       .whenComplete(() {
-                                                    db
-                                                        .child(widget.kategori.toLowerCase())
-                                                        .child(val.key)
-                                                        .remove()
-                                                        .whenComplete(() {
-                                                      EasyLoading.showSuccess("Data berhasil di hapus.",
-                                                          dismissOnTap: true, duration: Duration(seconds: 3));
-                                                      Navigator.pop(context);
-                                                    }).onError((error, stackTrace) {
-                                                      EasyLoading.showSuccess("Error : ${error}.",
-                                                          dismissOnTap: true, duration: Duration(seconds: 3));
-                                                    });
+                                                    EasyLoading.showSuccess("Data berhasil di hapus.",
+                                                        dismissOnTap: true, duration: Duration(seconds: 3));
+                                                    Navigator.pop(context);
                                                   }).onError((error, stackTrace) {
                                                     EasyLoading.showSuccess("Error : ${error}.",
                                                         dismissOnTap: true, duration: Duration(seconds: 3));
                                                   });
+                                                  // FirebaseStorage.instance
+                                                  //     .ref()
+                                                  //     .child("ternak")
+                                                  //     .child(widget.kategori.toLowerCase())
+                                                  //     .child(val.value['gambar_1'])
+                                                  //     .delete()
+                                                  //     .whenComplete(() {
+                                                  //   db.child(widget.kategori.toLowerCase())
+                                                  //       .child(val.key)
+                                                  //       .remove()
+                                                  //       .whenComplete(() {
+                                                  //     EasyLoading.showSuccess("Data berhasil di hapus.",
+                                                  //         dismissOnTap: true, duration: Duration(seconds: 3));
+                                                  //     Navigator.pop(context);
+                                                  //   }).onError((error, stackTrace) {
+                                                  //     EasyLoading.showSuccess("Error : ${error}.",
+                                                  //         dismissOnTap: true, duration: Duration(seconds: 3));
+                                                  //   });
+                                                  // })
+                                                  //     .onError((error, stackTrace) {
+                                                  //   EasyLoading.showSuccess("Error : ${error}.",
+                                                  //       dismissOnTap: true, duration: Duration(seconds: 3));
+                                                  // });
                                                 },
                                                 onPressNo: () {
                                                   Navigator.pop(context);
