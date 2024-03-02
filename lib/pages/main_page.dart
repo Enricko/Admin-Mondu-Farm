@@ -232,22 +232,22 @@ class _MainPageState extends State<MainPage> {
                   ),
                 );
               },
-              title: 'Dashboard',
+              title: 'List Chat',
               hoverColor: Warna.ungu,
               highlightSelectedColor: Warna.ungu,
               titleStyle: const TextStyle(color: Colors.black),
-              icon: const Icon(Icons.home_outlined),
-              selectedIcon: const Icon(Icons.home),
+              icon: const Icon(Icons.chat_outlined),
+              selectedIcon: const Icon(Icons.chat),
               badgeStyle: BadgeStyle(
                 badgeColor: Warna.biruUngu,
               ),
-              badgeContent: const Text(
-                '23',
-                style: TextStyle(
-                  fontSize: 8,
-                  color: Colors.black,
-                ),
-              ),
+              // badgeContent: const Text(
+              //   '23',
+              //   style: TextStyle(
+              //     fontSize: 8,
+              //     color: Colors.black,
+              //   ),
+              // ),
             ),
             SideMenuItemDataDivider(
               divider: Divider(color: Colors.black.withOpacity(0.3), height: 1),
@@ -273,8 +273,8 @@ class _MainPageState extends State<MainPage> {
               hoverColor: Warna.ungu,
               highlightSelectedColor: Warna.ungu,
               titleStyle: const TextStyle(color: Colors.black),
-              icon: const Icon(Icons.people_alt_outlined),
-              selectedIcon: const Icon(Icons.people_alt),
+              icon: const Icon(Icons.emoji_people_outlined),
+              selectedIcon: const Icon(Icons.emoji_people),
             ),
             SideMenuItemDataTile(
               isSelected: widget.route == "admin",
@@ -430,7 +430,7 @@ class _MainPageState extends State<MainPage> {
               isSelected: widget.route == "logout",
               onTap: () {
                 Alerts.showAlertYesNoLogout(
-                    title: "Are you sure you want to Logout?",
+                    title: "Apakah anda yakin ingin Keluar?",
                     onPressYes: () async {
                       await FirebaseAuth.instance.signOut();
                       Navigator.pop(context);

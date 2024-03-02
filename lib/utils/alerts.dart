@@ -109,34 +109,28 @@ class Alerts {
           ),
           actions: [
             // tombel yes
-            SizedBox(
-              width: 90,
-              child: ElevatedButton(
-                style: ButtonStyle(
-                  shape: MaterialStateProperty.all(RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(4))),
-                  backgroundColor: MaterialStateProperty.all(Colors.red),
-                ),
-                onPressed: onPressYes,
-                child: Text('Delete', style: TextStyle(color: Colors.white)),
+            ElevatedButton(
+              style: ButtonStyle(
+                shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(4))),
+                backgroundColor: MaterialStateProperty.all(Colors.red),
               ),
+              onPressed: onPressYes,
+              child: Text('Delete', style: TextStyle(color: Colors.white)),
             ),
             //tombol no
-            SizedBox(
-              width: 90,
-              child: TextButton(
-                style: ButtonStyle(
-                    shape: MaterialStateProperty.all(
-                  RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(4),
-                    side: BorderSide(
-                      color: Colors.black38,
-                    ),
+            TextButton(
+              style: ButtonStyle(
+                  shape: MaterialStateProperty.all(
+                RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(4),
+                  side: BorderSide(
+                    color: Colors.black38,
                   ),
-                )),
-                onPressed: onPressNo,
-                child: Text('No', style: TextStyle(color: Colors.black38)),
-              ),
+                ),
+              )),
+              onPressed: onPressNo,
+              child: Text('No', style: TextStyle(color: Colors.black38)),
             ),
           ],
         );

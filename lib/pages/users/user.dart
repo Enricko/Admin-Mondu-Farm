@@ -157,7 +157,7 @@ class _UserTableState extends State<UserTable> {
                                             ),
                                             onPressed: () {
                                               Alerts.showAlertYesNo(
-                                                title: "Are you sure you want to delete this data?",
+                                                title: "Apakah anda yakin?",
                                                 onPressYes: () async {
                                                   db.child(val.key).remove();
                                                   EasyLoading.showSuccess("Data berhasil di hapus.",
