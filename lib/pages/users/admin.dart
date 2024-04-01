@@ -160,7 +160,7 @@ class _AdminTableState extends State<AdminTable> {
                                           ),
                                         ),
                                         Tooltip(
-                                          message: "Delete",
+                                          message: "Hapus",
                                           child: IconButton(
                                             icon: const Icon(
                                               Icons.delete,

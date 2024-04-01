@@ -74,19 +74,19 @@ class _LoginPageState extends State<LoginPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Container(
-                width: 75,
-                height: 75,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(color: Warna.ungu, borderRadius: BorderRadius.circular(100)),
-                child: Image.network(
-                  "assets/gambar/password_user.png",
-                  width: 75,
-                ),
-              ),
-              SizedBox(
-                height: 25,
-              ),
+              // Container(
+              //   width: 75,
+              //   height: 75,
+              //   alignment: Alignment.center,
+              //   decoration: BoxDecoration(color: Warna.ungu, borderRadius: BorderRadius.circular(100)),
+              //   child: Image.network(
+              //     "assets/gambar/password_user.png",
+              //     width: 75,
+              //   ),
+              // ),
+              // SizedBox(
+              //   height: 25,
+              // ),
               Container(
                 width: width >= 600 ? width * 0.5 : width * 0.75,
                 padding: EdgeInsets.symmetric(horizontal: width * .1, vertical: 50),
@@ -106,10 +106,10 @@ class _LoginPageState extends State<LoginPage> {
                   children: [
                     const Text(
                       "Login",
-                      style: TextStyle(color: Colors.black, fontSize: 24, fontWeight: FontWeight.bold),
+                      style: TextStyle(color: Colors.black, fontSize: 30, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(
-                      height: 10,
+                      height: 20,
                     ),
                     Form(
                       key: _formKey,
@@ -119,19 +119,19 @@ class _LoginPageState extends State<LoginPage> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Container(
-                                width: 50,
-                                height: 50,
-                                alignment: Alignment.center,
-                                decoration: BoxDecoration(color: Warna.ungu, borderRadius: BorderRadius.circular(50)),
-                                child: Image.network(
-                                  "assets/gambar/card_hand.png",
-                                  width: 50,
-                                ),
-                              ),
-                              const SizedBox(
-                                width: 10,
-                              ),
+                              // Container(
+                              //   width: 50,
+                              //   height: 50,
+                              //   alignment: Alignment.center,
+                              //   decoration: BoxDecoration(color: Warna.ungu, borderRadius: BorderRadius.circular(50)),
+                              //   child: Image.network(
+                              //     "assets/gambar/card_hand.png",
+                              //     width: 50,
+                              //   ),
+                              // ),
+                              // const SizedBox(
+                              //   width: 10,
+                              // ),
                               Expanded(
                                 child: TextFormField(
                                   keyboardType: TextInputType.emailAddress,
@@ -167,19 +167,19 @@ class _LoginPageState extends State<LoginPage> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Container(
-                                width: 50,
-                                height: 50,
-                                alignment: Alignment.center,
-                                decoration: BoxDecoration(color: Warna.ungu, borderRadius: BorderRadius.circular(50)),
-                                child: Image.network(
-                                  "assets/gambar/phone.png",
-                                  width: 50,
-                                ),
-                              ),
-                              const SizedBox(
-                                width: 10,
-                              ),
+                              // Container(
+                              //   width: 50,
+                              //   height: 50,
+                              //   alignment: Alignment.center,
+                              //   decoration: BoxDecoration(color: Warna.ungu, borderRadius: BorderRadius.circular(50)),
+                              //   child: Image.network(
+                              //     "assets/gambar/phone.png",
+                              //     width: 50,
+                              //   ),
+                              // ),
+                              // const SizedBox(
+                              //   width: 10,
+                              // ),
                               Expanded(
                                 child: TextFormField(
                                   keyboardType: TextInputType.visiblePassword,

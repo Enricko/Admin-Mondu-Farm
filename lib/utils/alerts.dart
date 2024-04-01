@@ -64,7 +64,7 @@ class Alerts {
                 backgroundColor: MaterialStateProperty.all(Colors.red),
               ),
               onPressed: onPressYes,
-              child: Text('Delete', style: TextStyle(color: Colors.white)),
+              child: Text('Hapus', style: TextStyle(color: Colors.white)),
             ),
             //tombol no
             TextButton(
@@ -78,7 +78,7 @@ class Alerts {
                 ),
               )),
               onPressed: onPressNo,
-              child: Text('No', style: TextStyle(color: Colors.black38)),
+              child: Text('Tidak ', style: TextStyle(color: Colors.black38)),
             ),
           ],
         );
